@@ -122,8 +122,7 @@ NIKE THE DRAW 시스템 커버하기
 
 
 ## Event Storming 결과
-* MSAEz 로 모델링한 이벤트스토밍 결과:  http://msaez.io/#/storming/nZJ2QhwVc4NlVJPbtTkZ8x9jclF2/every/a77281d704710b0c2e6a823b6e6d973a/-M5AV2z--su_i4BfQfeF
-
+* MSAEz 로 모델링한 이벤트스토밍 결과: http://labs.msaez.io/#/storming/T1YZ69ggZUbBACuupTUSDFTVC872/49d1ec0b9c0c606e75abe005e9eb8ba6
 
 ### 이벤트 도출
 ![image](https://user-images.githubusercontent.com/487999/79683604-47bc0180-8266-11ea-9212-7e88c9bf9911.png)
