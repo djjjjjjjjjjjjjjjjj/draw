@@ -1,4 +1,4 @@
-![image](https://user-images.githubusercontent.com/487999/79708354-29074a80-82fa-11ea-80df-0db3962fb453.png)
+![image](https://user-images.githubusercontent.com/87048583/130794977-8f194589-8d9b-438f-9b71-363a468bb656.png)
 
 # Draw 
 
