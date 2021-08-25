@@ -1,7 +1,7 @@
 
 **![image](https://user-images.githubusercontent.com/87048583/130795100-b322940a-0cc7-4a61-a912-cd7177500c9c.png)![image](https://user-images.githubusercontent.com/87048583/130794977-8f194589-8d9b-438f-9b71-363a468bb656.png)**
 
-# Draw 
+# The Draw 
 
 본 예제는 MSA/DDD/Event Storming/EDA 를 포괄하는 분석/설계/구현/운영 전단계를 커버하도록 구성한 예제입니다.
 이는 클라우드 네이티브 애플리케이션의 개발에 요구되는 체크포인트들을 통과하기 위한 예시 답안을 포함합니다.
