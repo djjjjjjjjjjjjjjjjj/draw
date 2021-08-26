@@ -140,46 +140,16 @@ NIKE THE DRAW 시스템 커버하기
 
 ![image](https://user-images.githubusercontent.com/87048583/130807623-447df7f9-46d5-479e-8f04-1a7d7faf1346.png)
 
-
-### 폴리시 부착 (괄호는 수행주체, 폴리시 부착을 둘째단계에서 해놔도 상관 없음. 전체 연계가 초기에 드러남)
-
 ![image](https://user-images.githubusercontent.com/87048583/130807661-be966a4f-8c64-4a28-b59d-e08feb9d6861.png)
-
-### 폴리시의 이동과 컨텍스트 매핑 (점선은 Pub/Sub, 실선은 Req/Resp)
 
 ![image](https://user-images.githubusercontent.com/87048583/130807704-a5e896eb-4300-4c30-be3d-7a4d652a7daa.png)
 
-### 완성된 1차 모형
-
 ![image](https://user-images.githubusercontent.com/87048583/130807733-d24ebe48-6870-4675-a828-9b87e89c3290.png)
 
-    - View Model 추가
+![image](https://user-images.githubusercontent.com/87048583/130955552-0ecafbe6-7dd3-47ad-bbee-5973769beb91.png)
 
-### 1차 완성본에 대한 기능적/비기능적 요구사항을 커버하는지 검증
+![image](https://user-images.githubusercontent.com/87048583/130955784-0e639985-a965-4b9c-ade4-0cde54c10e6c.png)
 
-![image](https://user-images.githubusercontent.com/487999/79684167-3ecd2f00-826a-11ea-806a-957362d197e3.png)
-
-    - 고객이 메뉴를 선택하여 주문한다 (ok)
-    - 고객이 결제한다 (ok)
-    - 주문이 되면 주문 내역이 입점상점주인에게 전달된다 (ok)
-    - 상점주인이 확인하여 요리해서 배달 출발한다 (ok)
-
-![image](https://user-images.githubusercontent.com/487999/79684170-47256a00-826a-11ea-9777-e16fafff519a.png)
-    - 고객이 주문을 취소할 수 있다 (ok)
-    - 주문이 취소되면 배달이 취소된다 (ok)
-    - 고객이 주문상태를 중간중간 조회한다 (View-green sticker 의 추가로 ok) 
-    - 주문상태가 바뀔 때 마다 카톡으로 알림을 보낸다 (?)
-
-
-### 모델 수정
-
-![image](https://user-images.githubusercontent.com/487999/79684176-4e4c7800-826a-11ea-8deb-b7b053e5d7c6.png)
-    
-    - 수정된 모델은 모든 요구사항을 커버함.
-
-### 비기능 요구사항에 대한 검증
-
-![image](https://user-images.githubusercontent.com/487999/79684184-5c9a9400-826a-11ea-8d87-2ed1e44f4562.png)
 
         - 당첨 되지 않은 주문건은 아예 거래가 성립되지 않아야 한다  Sync 호출 
         - 주문 기능이 수행되지 않더라도 Draw신청은 365일 24시간 받을 수 있어야 한다  Async (event-driven), Eventual Consistency
