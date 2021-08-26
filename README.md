@@ -148,8 +148,7 @@ NIKE THE DRAW 시스템 커버하기
 
 ![image](https://user-images.githubusercontent.com/87048583/130955552-0ecafbe6-7dd3-47ad-bbee-5973769beb91.png)
 
-![image](https://user-images.githubusercontent.com/87048583/130955784-0e639985-a965-4b9c-ade4-0cde54c10e6c.png)
-
+![image](https://user-images.githubusercontent.com/87048583/130955938-14b575c9-c2b6-4e69-bf7f-27fc8570652c.png)
 
         - 당첨 되지 않은 주문건은 아예 거래가 성립되지 않아야 한다  Sync 호출 
         - 주문 기능이 수행되지 않더라도 Draw신청은 365일 24시간 받을 수 있어야 한다  Async (event-driven), Eventual Consistency
