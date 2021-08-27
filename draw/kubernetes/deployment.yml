@@ -1,0 +1,228 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: Draw
+  labels:
+    app: Draw
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: Draw
+  template:
+    metadata:
+      labels:
+        app: Draw
+    spec:
+      containers:
+        - name: Draw
+          image: username/Draw:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: Raffle
+  labels:
+    app: Raffle
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: Raffle
+  template:
+    metadata:
+      labels:
+        app: Raffle
+    spec:
+      containers:
+        - name: Raffle
+          image: username/Raffle:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: MyPage
+  labels:
+    app: MyPage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: MyPage
+  template:
+    metadata:
+      labels:
+        app: MyPage
+    spec:
+      containers:
+        - name: MyPage
+          image: username/MyPage:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: Order
+  labels:
+    app: Order
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: Order
+  template:
+    metadata:
+      labels:
+        app: Order
+    spec:
+      containers:
+        - name: Order
+          image: username/Order:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: Draw
+  labels:
+    app: Draw
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: Draw
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: Raffle
+  labels:
+    app: Raffle
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: Raffle
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: MyPage
+  labels:
+    app: MyPage
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: MyPage
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: Order
+  labels:
+    app: Order
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: Order
+
