@@ -51,7 +51,7 @@ NIKE THE DRAW 시스템 커버하기
     1. Draw시스템이 과중되면 사용자를 잠시동안 받지 않고 결제를 잠시후에 하도록 유도한다  Circuit breaker, fallback
 1. 성능
     1. 고객이 자주 Draw 결과를 확인할 수 있어야 한다  CQRS
-    1. Draw상태가 바뀔때마다 카톡 등으로 알림을 줄 수 있어야 한다  Event driven
+    1. Draw상태가 바뀔때마다 SMS 등으로 알림을 줄 수 있어야 한다  Event driven
 
 
 # 체크포인트
