@@ -138,20 +138,19 @@ NIKE THE DRAW 시스템 커버하기
 ![image](https://user-images.githubusercontent.com/87048583/131519456-02336333-9eb2-4f8e-aac3-5b39d5517d86.png)
 
 ### 바운디드 컨텍스트로 묶기
+![image](https://user-images.githubusercontent.com/87048583/131523034-ec9cef60-0565-4182-9fbb-3337c244ac9e.png)
 
-![image](https://user-images.githubusercontent.com/87048583/130807623-447df7f9-46d5-479e-8f04-1a7d7faf1346.png)
+![image](https://user-images.githubusercontent.com/87048583/131523077-f9e3f351-1750-4dbd-a751-ae37292a8ac3.png)
 
-![image](https://user-images.githubusercontent.com/87048583/130807661-be966a4f-8c64-4a28-b59d-e08feb9d6861.png)
+![image](https://user-images.githubusercontent.com/87048583/131523108-72a848f0-d7e0-4510-babd-1db0e2ab337a.png)
 
-![image](https://user-images.githubusercontent.com/87048583/130807704-a5e896eb-4300-4c30-be3d-7a4d652a7daa.png)
+![image](https://user-images.githubusercontent.com/87048583/131523168-85cfe3cc-859c-4b2c-b905-c9fdd5938455.png)
 
-![image](https://user-images.githubusercontent.com/87048583/130807733-d24ebe48-6870-4675-a828-9b87e89c3290.png)
+![image](https://user-images.githubusercontent.com/87048583/131523209-752c7f9b-25d2-4272-92e9-34dc8b03ac2e.png)
 
-![image](https://user-images.githubusercontent.com/87048583/130955552-0ecafbe6-7dd3-47ad-bbee-5973769beb91.png)
+![image](https://user-images.githubusercontent.com/87048583/131523265-daf38a53-030f-4c28-8616-db44eb806cbd.png)
 
-![image](https://user-images.githubusercontent.com/87048583/130955938-14b575c9-c2b6-4e69-bf7f-27fc8570652c.png)
-
-        - 당첨 되지 않은 주문건은 아예 거래가 성립되지 않아야 한다  Sync 호출 
+        - 인증 실패한 주문건은 아예 거래가 성립되지 않아야 한다  Sync 호출 
         - 주문 기능이 수행되지 않더라도 Draw신청은 365일 24시간 받을 수 있어야 한다  Async (event-driven), Eventual Consistency
         - Draw시스템이 과중되면 사용자를 잠시동안 받지 않고 결제를 잠시후에 하도록 유도한다  Circuit breaker, fallback
         - 고객이 자주 Draw 결과를 확인할 수 있어야 한다  CQRS
@@ -159,7 +158,7 @@ NIKE THE DRAW 시스템 커버하기
 
 ## 헥사고날 아키텍처 다이어그램 도출
     
-![image](https://user-images.githubusercontent.com/87048583/130956262-05bb7ac5-3c93-4e51-8a56-45252af90ae0.png)
+![image](https://user-images.githubusercontent.com/87048583/131523305-059e4c80-f8e4-44b0-a82d-b797b2658cc8.png)
 
 
 
