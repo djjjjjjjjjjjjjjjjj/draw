@@ -179,60 +179,127 @@ mvn spring-boot:run
 cd authentication
 mvn spring-boot:run  
 
+cd Mypage
+mvn spring-boot:run
+
+cd gateway
+mvn spring-boot:run
+
+
 ## DDD 의 적용
 
 - 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다: (예시는 pay 마이크로 서비스). 이때 가능한 현업에서 사용하는 언어 (유비쿼터스 랭귀지)를 그대로 사용하려고 노력했다. 하지만, 일부 구현에 있어서 영문이 아닌 경우는 실행이 불가능한 경우가 있기 때문에 계속 사용할 방법은 아닌것 같다. (Maven pom.xml, Kafka의 topic id, FeignClient 의 서비스 id 등은 한글로 식별자를 사용하는 경우 오류가 발생하는 것을 확인하였다)
 
+## Draw.java
 ```
-package fooddelivery;
+package draw;
 
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
 import java.util.List;
+import java.util.Date;
 
 @Entity
-@Table(name="결제이력_table")
-public class 결제이력 {
+@Table(name="Draw_table")
+public class Draw {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
-    private String orderId;
-    private Double 금액;
+    private Integer itemNo;
+    private Double price;
+    private Date drawDate;
+    private Integer size;
+    private String userId;
+    private Integer drawId;
+    private String drawName;
+    private boolean win;
 
-    public Long getId() {
+public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
     }
-    public String getOrderId() {
-        return orderId;
+    public Integer getItemNo() {
+        return itemNo;
     }
 
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
+    public void setItemNo(Integer itemNo) {
+        this.itemNo = itemNo;
     }
-    public Double get금액() {
-        return 금액;
+    public Double getPrice() {
+        return price;
     }
 
-    public void set금액(Double 금액) {
-        this.금액 = 금액;
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+    public Date getDrawDate() {
+        return drawDate;
+    }
+
+    public void setDrawDate(Date drawDate) {
+        this.drawDate = drawDate;
+    }
+    public Integer getSize() {
+        return size;
+    }
+
+    public void setSize(Integer size) {
+        this.size = size;
+    }
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+    public Integer getDrawId() {
+        return drawId;
+    }
+
+    public void setDrawId(Integer drawId) {
+        this.drawId = drawId;
+    }
+    public String getDrawName() {
+        return drawName;
+    }
+
+    public void setDrawName(String drawName) {
+        this.drawName = drawName;
+    }
+
+
+    public boolean getWin() {
+        return win;
+    }
+
+    public void setWin(boolean win) {
+        this.win = win;
     }
 
 }
-
 ```
 - Entity Pattern 과 Repository Pattern 을 적용하여 JPA 를 통하여 다양한 데이터소스 유형 (RDB or NoSQL) 에 대한 별도의 처리가 없도록 데이터 접근 어댑터를 자동 생성하기 위하여 Spring Data REST 의 RestRepository 를 적용하였다
+
+## Draw.java
+
+
 ```
-package fooddelivery;
+package draw;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-public interface 결제이력Repository extends PagingAndSortingRepository<결제이력, Long>{
+@RepositoryRestResource(collectionResourceRel="draws", path="draws")
+public interface DrawRepository extends PagingAndSortingRepository<Draw, Long>{
+
+
 }
+
 ```
 - 적용 후 REST API 의 테스트
 ```
