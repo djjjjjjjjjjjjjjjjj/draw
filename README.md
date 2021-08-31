@@ -544,8 +544,10 @@ Auth.java
 
     }
 ```
-계좌 서비스에서는 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다
+주문 서비스에서는 인증 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다
 PolicyHandler.java
+
+```java
 @Service
 public class PolicyHandler{
     @Autowired OrderRepository orderRepository;
@@ -583,7 +585,7 @@ public class PolicyHandler{
 
 
 }
-
+```
 
 # 운영
 
