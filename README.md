@@ -309,7 +309,7 @@ http localhost:8080/draws itemNo="1111" price="100000" drawDate="2021-08-28" siz
 +모든 요청은 request 에서 처리하는 관계로 다른 마이크로시스템에 접속하지 않는다.
 요청상태 확인
 ```
-http http://request:8080/requests/1
+http http://request:8080/draws/1
 ```
 
 ## 폴리글랏 퍼시스턴스
@@ -348,37 +348,136 @@ public interface 주문Repository extends JpaRepository<Order, UUID>{
 
 ## 폴리글랏 프로그래밍
 
-고객관리 서비스(customer)의 시나리오인 주문상태, 배달상태 변경에 따라 고객에게 카톡메시지 보내는 기능의 구현 파트는 해당 팀이 python 을 이용하여 구현하기로 하였다. 해당 파이썬 구현체는 각 이벤트를 수신하여 처리하는 Kafka consumer 로 구현되었고 코드는 다음과 같다:
+고객에게 메세지 전송은 전통적인 RDB로 개발 하기로 하고 구현이 간단한 sqlite로 구현함.
+
+pom.xml
+```XML
+sqlite 사용을 위해 sqlite용 jdbc dependency 추가
+	<dependency>
+      		<groupId>org.xerial</groupId>
+      		<artifactId>sqlite-jdbc</artifactId>
+	</dependency>
+쿼리로 작업하기 위해 mybatis dependency 추가
+	<dependency>
+    		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-core</artifactId>
+	</dependency>
+    	<dependency>
+        	<groupId>org.mybatis.spring.boot</groupId>
+        	<artifactId>mybatis-spring-boot-starter</artifactId>
+        	<version>1.3.2</version>
+    	</dependency>
 ```
-from flask import Flask
-from redis import Redis, RedisError
-from kafka import KafkaConsumer
-import os
-import socket
+
+application.yml
+was 기동시 자동으로 sqlite 연결 설정 프로젝트 폴드에 자동으로 sqlitesample.db 생성됨
+  datasource:
+    url: jdbc:sqlite:sqlitesample.db 
+    driver-class-name: org.sqlite.JDBC
+    username: admin 
+    password: admin
 
 
-# To consume latest messages and auto-commit offsets
-consumer = KafkaConsumer('fooddelivery',
-                         group_id='',
-                         bootstrap_servers=['localhost:9092'])
-for message in consumer:
-    print ("%s:%d:%d: key=%s value=%s" % (message.topic, message.partition,
-                                          message.offset, message.key,
-                                          message.value))
+SendMsgVO.java
+mybatis 조회 결과를 VO 형태로 받기 위한 VO 설정
+```java
+@Data
+public class SendMsgVO {
+	private Long id; 
+	private String phone; 
+	private String message; 
+	
+	public SendMsgVO() {
+	}
+	
+	public SendMsgVO(String pphone, String pmessage) {
+		this.phone = pphone;
+		this.message = pmessage;
+	}
+}
 
-    # 카톡호출 API
+KakaoDAO.java
+Mapper.xml 파일과 연결하기 위한 용도로 함수 생성
+@Mapper
+public interface  KakaoDAO {
+	void insertmsg(SendMsgVO vo) throws Exception;;
+	List<SendMsgVO> selectmsg() throws Exception;;
+}
 ```
 
-파이선 애플리케이션을 컴파일하고 실행하기 위한 도커파일은 아래와 같다 (운영단계에서 할일인가? 아니다 여기 까지가 개발자가 할일이다. Immutable Image):
+##폴리글랏 프로그래밍
+구현의 편의를 위해 Java 버전도 16 을 사용.
+
+KakaoTakMapper.xml
+```XML  
+KakaoDAO.java 생성된 함수와 동일한 package 경로와 함수명으로 select, insert 함수 생성
+
+<mapper namespace="com.example.demo.table.KakaoDAO">
+    <select id="selectmsg"  resultType="com.example.demo.table.SendMsgVO">
+    <![CDATA[
+        select id, phone, message from send_msg order by 1 desc LIMIT 5
+    ]]>
+    </select>
+    
+    <insert id="insertmsg" parameterType="com.example.demo.table.SendMsgVO" >
+    <![CDATA[
+    	INSERT INTO send_msg VALUES 
+		( (select max(id)+1 from send_msg) , 
+		#{phone} , #{message}  )
+	]]>
+	</insert>
+</mapper>
 ```
-FROM python:2.7-slim
-WORKDIR /app
-ADD . /app
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
-ENV NAME World
-EXPOSE 8090
-CMD ["python", "policy-handler.py"]
+  
+KafkaService.java
+카프카에서 수신 받은 메세지를 sqlite에 저장
+
+```java  
+@Service
+@Transactional
+public class KafkaService {
+	
+	//저장을 위해 위에서 만든 DAO 파일 선언
+	@Autowired
+	KakaoDAO kakaoDAO;
+	
+        //수신 받을 topic 선언
+	@KafkaListener(topics = "onlinebank", groupId="kakaotalk")
+	public void getKafka(String message) {
+		
+		System.out.println( "kakaotalk getKafka START " );
+		
+		try {
+			ObjectMapper objectMapper = new ObjectMapper();
+			Map<String, String> map = (Map<String, String>)objectMapper.readValue( message, Map.class);
+			System.out.println( "kafka recerve data : " + map);
+			
+			//수신 받은 메세지에서 job 에 kakaotalk 이라는 글자가 존재 하면 sqlite 저장
+			if ( map.get("job")!= null && map.get("job").indexOf("kakaotalk") >=0 ) {
+				
+				SendMsgVO vo = new SendMsgVO(); 
+				vo.setPhone(  map.get( "phone").toString() );
+	    		vo.setMessage( map.get( "message").toString() );
+	    		kakaoDAO.insertmsg(vo);
+			} else {
+				System.out.println( "kafka Skip ");
+			}
+			
+		} catch ( Exception e ) {
+			e.printStackTrace();
+		}
+	}
+}
 ```
+  
+Dockerfile 
+Java 16 버전 사용을 위해 image도 openjdk16 을 사용함.
+
+FROM khipu/openjdk16-alpine
+COPY target/*SNAPSHOT.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java","-Xmx400M","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar","--spring.profiles.active=docker"]
+
 
 
 ## 동기식 호출 과 Fallback 처리
