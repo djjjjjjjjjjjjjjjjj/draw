@@ -191,7 +191,7 @@ mvn spring-boot:run
 - 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다: (예시는 pay 마이크로 서비스). 이때 가능한 현업에서 사용하는 언어 (유비쿼터스 랭귀지)를 그대로 사용하려고 노력했다. 하지만, 일부 구현에 있어서 영문이 아닌 경우는 실행이 불가능한 경우가 있기 때문에 계속 사용할 방법은 아닌것 같다. (Maven pom.xml, Kafka의 topic id, FeignClient 의 서비스 id 등은 한글로 식별자를 사용하는 경우 오류가 발생하는 것을 확인하였다)
 
 ## Draw.java
-```
+```java
 package draw;
 
 import javax.persistence.*;
@@ -288,7 +288,7 @@ public class Draw {
 ## DrawRepository.java
 
 
-```
+```java
 package draw;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -306,7 +306,7 @@ draw 서비스의 요청처리
 http localhost:8080/draws itemNo="1111" price="100000" drawDate="2021-08-28" size=275 drawId="001" drawName="NIKE jordan 1" userId="dj14"
 ```
 
-모든 요청은 request 에서 처리하는 관계로 다른 마이크로시스템에 접속하지 않는다.
++모든 요청은 request 에서 처리하는 관계로 다른 마이크로시스템에 접속하지 않는다.
 요청상태 확인
 ```
 http http://request:8080/requests/1
