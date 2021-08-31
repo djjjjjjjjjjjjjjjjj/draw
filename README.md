@@ -126,16 +126,16 @@ NIKE THE DRAW 시스템 커버하기
 * MSAEz 로 모델링한 이벤트스토밍 결과: http://labs.msaez.io/#/storming/T1YZ69ggZUbBACuupTUSDFTVC872/49d1ec0b9c0c606e75abe005e9eb8ba6
 
 ### 이벤트 도출
-![image](https://user-images.githubusercontent.com/87048583/130807478-5441685e-3345-4b60-bf7b-b9e2a601b414.png)
+![image](https://user-images.githubusercontent.com/87048583/131518889-6507170e-7932-443d-8e79-aa7df21e44fa.png)
 
 ### 부적격 이벤트 탈락
-![image](https://user-images.githubusercontent.com/87048583/130807508-6ef06498-515c-4bec-973b-560f5d264701.png)
+![image](https://user-images.githubusercontent.com/87048583/131518961-08ffd9c8-072a-4187-81b8-d095a6550480.png)
 
 ### 액터, 커맨드 부착하여 읽기 좋게
-![image](https://user-images.githubusercontent.com/87048583/130807547-3e1231fe-43ad-4fe6-869d-cfda69c6b9b9.png)
+![image](https://user-images.githubusercontent.com/87048583/131519243-a869d260-6352-4326-854d-23f42e8ad893.png)
 
 ### 어그리게잇으로 묶기
-![image](https://user-images.githubusercontent.com/87048583/130807592-1c184972-8fce-4ddb-8f88-c26894758885.png)
+![image](https://user-images.githubusercontent.com/87048583/131519456-02336333-9eb2-4f8e-aac3-5b39d5517d86.png)
 
 ### 바운디드 컨텍스트로 묶기
 
