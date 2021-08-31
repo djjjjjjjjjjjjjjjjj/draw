@@ -480,9 +480,6 @@ Ordert.java
         BeanUtils.copyProperties(this, orderRequested);
         orderRequested.publishAfterCommit();
 
-        //Following code causes dependency to external APIs
-        // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
-
         draw.external.Auth auth = new draw.external.Auth();
         BeanUtils.copyProperties(this, auth);
         auth.setOrderRequestId( getId() );
@@ -493,90 +490,99 @@ Ordert.java
     }
 ```
 
-## 비동기식 호출 / 시간적 디커플링 / 장애격리 / 최종 (Eventual) 일관성 테스트
+## 비동기식 호출
+인증성공 후 주문 시스템으로 이를 알려주는 행위는 동기식이 아니라 비 동기식으로 처리하여
 
+주문 처리를 위하여 인증 기능이 블로킹 되지 않아도록 처리한다.
 
-결제가 이루어진 후에 상점시스템으로 이를 알려주는 행위는 동기식이 아니라 비 동기식으로 처리하여 상점 시스템의 처리를 위하여 결제주문이 블로킹 되지 않아도록 처리한다.
- 
-- 이를 위하여 결제이력에 기록을 남긴 후에 곧바로 결제승인이 되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
- 
-```
-package fooddelivery;
-
-@Entity
-@Table(name="결제이력_table")
-public class 결제이력 {
-
- ...
-    @PrePersist
+이를 위하여 로 인증완료 되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
+Auth.java
+```java
+ @PrePersist
     public void onPrePersist(){
-        결제승인됨 결제승인됨 = new 결제승인됨();
-        BeanUtils.copyProperties(this, 결제승인됨);
-        결제승인됨.publish();
+
+        String userId = "dj@sk.com";
+        String userName = "dj";
+        String userPassword = "1234";
+        boolean authResult = false ;
+
+        if( userId.equals( getUserId() ) && userName.equals( getUserName() ) && userPassword.equals( getUserPassword() ) ){
+            authResult = true ;
+        }
+
+        System.out.println("\nBankAuthentication.Auth.39\n###############################################");
+        System.out.println("authResult : " + authResult) ;
+        System.out.println("orderRequestId : " + getOrderRequestId()) ;
+        System.out.println("requestName : " + getOrderRequestName()) ;
+        System.out.println("###############################################\n");
+	
+	 // 실패 이벤트 카프카 송출
+        if( authResult == false ){
+            AuthCancelled authCancelled = new AuthCancelled();
+            BeanUtils.copyProperties(this, authCancelled);
+            authCancelled.publish();
+	
+	 // 성공 이벤트 카프카 송출
+        }else{
+            AuthCertified authCertified = new AuthCertified();
+            BeanUtils.copyProperties(this, authCertified);
+
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                @Override
+                public void beforeCommit(boolean readOnly) {
+                    authCertified.publish();
+                }
+            });
+
+            //try {
+            //    Thread.currentThread().sleep((long) (400 + Math.random() * 220));
+            //} catch (InterruptedException e) {
+            //    e.printStackTrace();
+            //}
+
+        }
+
     }
-
-}
 ```
-- 상점 서비스에서는 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
-
-```
-package fooddelivery;
-
-...
-
+계좌 서비스에서는 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다
+PolicyHandler.java
 @Service
 public class PolicyHandler{
-
+    @Autowired OrderRepository orderRepository;
+    //인증 실패
     @StreamListener(KafkaProcessor.INPUT)
-    public void whenever결제승인됨_주문정보받음(@Payload 결제승인됨 결제승인됨){
+    public void wheneverAuthCancelled_CancelAuthentication(@Payload AuthCancelled authCancelled){
 
-        if(결제승인됨.isMe()){
-            System.out.println("##### listener 주문정보받음 : " + 결제승인됨.toJson());
-            // 주문 정보를 받았으니, 요리를 슬슬 시작해야지..
-            
-        }
+        if(!authCancelled.validate()) return;    
+        orderRepository.deleteById( authCancelled.getOrderRequestId() );
+        System.out.println("\nBankRequest.PolicyHandler.20\n##############################################" + 
+                           "\n" + authCancelled.getOrderRequestName() + " Order Cancelled" + 
+                           "\nAuthentication Failed" + 
+                           "\n##############################################\n" );
+        System.out.println("Order PolicyHandler.24\n##### listener Cancel Authentication : " + authCancelled.toJson() + "\n");
+
+
     }
 
+    // 인증 성공시 정책 수신(비동기)
+    @StreamListener(KafkaProcessor.INPUT)
+    public void wheneverAuthCertified_OrderComplate(@Payload AuthCertified authCertified){
+        if(!authCertified.validate()) return;
+
+
+        Order order = orderRepository.findByItemNo( authCertified.getItemNo() );
+        order.setItemNo(authCertified.getItemNo());
+        order.setPrice(159000.0);
+        order.setSize(280);
+        order.setUserId(authCertified.getUserId());
+        orderRepository.save(order);
+    }
+
+    @StreamListener(KafkaProcessor.INPUT)
+    public void whatever(@Payload String eventString){}
+
+
 }
-
-```
-실제 구현을 하자면, 카톡 등으로 점주는 노티를 받고, 요리를 마친후, 주문 상태를 UI에 입력할테니, 우선 주문정보를 DB에 받아놓은 후, 이후 처리는 해당 Aggregate 내에서 하면 되겠다.:
-  
-```
-  @Autowired 주문관리Repository 주문관리Repository;
-  
-  @StreamListener(KafkaProcessor.INPUT)
-  public void whenever결제승인됨_주문정보받음(@Payload 결제승인됨 결제승인됨){
-
-      if(결제승인됨.isMe()){
-          카톡전송(" 주문이 왔어요! : " + 결제승인됨.toString(), 주문.getStoreId());
-
-          주문관리 주문 = new 주문관리();
-          주문.setId(결제승인됨.getOrderId());
-          주문관리Repository.save(주문);
-      }
-  }
-
-```
-
-상점 시스템은 주문/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 상점시스템이 유지보수로 인해 잠시 내려간 상태라도 주문을 받는데 문제가 없다:
-```
-# 상점 서비스 (store) 를 잠시 내려놓음 (ctrl+c)
-
-#주문처리
-http localhost:8081/orders item=통닭 storeId=1   #Success
-http localhost:8081/orders item=피자 storeId=2   #Success
-
-#주문상태 확인
-http localhost:8080/orders     # 주문상태 안바뀜 확인
-
-#상점 서비스 기동
-cd 상점
-mvn spring-boot:run
-
-#주문상태 확인
-http localhost:8080/orders     # 모든 주문의 상태가 "배송됨"으로 확인
-```
 
 
 # 운영
