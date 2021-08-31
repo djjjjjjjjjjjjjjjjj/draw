@@ -351,7 +351,7 @@ public interface 주문Repository extends JpaRepository<Order, UUID>{
 고객에게 메세지 전송은 전통적인 RDB로 개발 하기로 하고 구현이 간단한 sqlite로 구현함.
 
 pom.xml
-```XML
+```
 sqlite 사용을 위해 sqlite용 jdbc dependency 추가
 	<dependency>
       		<groupId>org.xerial</groupId>
@@ -409,7 +409,7 @@ public interface  KakaoDAO {
 구현의 편의를 위해 Java 버전도 16 을 사용.
 
 KakaoTakMapper.xml
-```XML  
+``` 
 KakaoDAO.java 생성된 함수와 동일한 package 경로와 함수명으로 select, insert 함수 생성
 
 <mapper namespace="com.example.demo.table.KakaoDAO">
