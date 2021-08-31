@@ -215,7 +215,7 @@ public class Draw {
     private String drawName;
     private boolean win;
 
-public Long getId() {
+    public Long getId() {
         return id;
     }
 
