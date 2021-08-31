@@ -303,9 +303,14 @@ public interface DrawRepository extends PagingAndSortingRepository<Draw, Long>{
 ```
 draw 서비스의 요청처리
 ```
-http localhost:8081/draws itemNo="1111" price="100000" drawDate="2021-08-28" size=275 drawId="001" drawName="NIKE jordan 1" userId="dj14"
+http localhost:8080/draws itemNo="1111" price="100000" drawDate="2021-08-28" size=275 drawId="001" drawName="NIKE jordan 1" userId="dj14"
 ```
 
+모든 요청은 request 에서 처리하는 관계로 다른 마이크로시스템에 접속하지 않는다.
+요청상태 확인
+```
+http http://request:8080/requests/1
+```
 
 ## 폴리글랏 퍼시스턴스
 
