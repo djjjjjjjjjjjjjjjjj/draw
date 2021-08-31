@@ -305,12 +305,16 @@ draw 서비스의 요청처리
 ```
 http localhost:8080/draws itemNo="1111" price="100000" drawDate="2021-08-28" size=275 drawId="001" drawName="NIKE jordan 1" userId="dj14"
 ```
+![image](https://user-images.githubusercontent.com/87048583/131528359-b9a26571-5fcb-4d75-82ab-65e8afe654ea.png)
+
 
 +모든 요청은 request 에서 처리하는 관계로 다른 마이크로시스템에 접속하지 않는다.
 요청상태 확인
 ```
 http http://request:8080/draws/1
 ```
+![image](https://user-images.githubusercontent.com/87048583/131528461-c62cf09b-10de-41a0-97a8-a0965eca3545.png)
+
 
 ## 폴리글랏 퍼시스턴스
 
