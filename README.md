@@ -897,8 +897,8 @@ Failed transactions:               0
 Longest transaction:            2.72
 Shortest transaction:           0.00
 배포중 Availability 100%를 보이며 무정지 재배포가 정상적으로 성공하였다.
-
-### Gateway / Corelation
+ 
+ ### Gateway / Corelation
 
 #### Gateway 기능이 정상적으로 수행되는지 확인하기 위하여 Gateway를 통하여 요청서비스를 호출한다.  
 
