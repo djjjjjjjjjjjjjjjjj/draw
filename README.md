@@ -653,66 +653,65 @@ root@siege:/# siege -v -c100 -t90S -r10 --content-type "application/json" 'http:
 ```
 ( 동시사용자 100명, 90초간 진행 )
 
+HTTP/1.1 500     4.46 secs:     250 bytes ==> POST http://request:8080/requests
+HTTP/1.1 500     3.88 secs:     250 bytes ==> POST http://request:8080/requests
+HTTP/1.1 500     3.69 secs:     250 bytes ==> POST http://request:8080/requests
+HTTP/1.1 500     3.88 secs:     250 bytes ==> POST http://request:8080/requests
+HTTP/1.1 500     3.85 secs:     250 bytes ==> POST http://request:8080/requests
+HTTP/1.1 500     3.60 secs:     250 bytes ==> POST http://request:8080/requests
+HTTP/1.1 500     3.76 secs:     250 bytes ==> POST http://request:8080/requests
+HTTP/1.1 500     4.09 secs:     250 bytes ==> POST http://request:8080/requests
+HTTP/1.1 500     3.62 secs:     250 bytes ==> POST http://request:8080/requests
+HTTP/1.1 500     4.14 secs:     250 bytes ==> POST http://request:8080/requests
+HTTP/1.1 500     3.59 secs:     250 bytes ==> POST http://request:8080/requests
 
-HTTP/1.1 500     4.46 secs:     250 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 500     3.88 secs:     250 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 500     3.69 secs:     250 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 500     3.88 secs:     250 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 500     3.85 secs:     250 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 500     3.60 secs:     250 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 500     3.76 secs:     250 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 500     4.09 secs:     250 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 500     3.62 secs:     250 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 500     4.14 secs:     250 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 500     3.59 secs:     250 bytes ==> POST http://request:8080/draws 
- 
-HTTP/1.1 201     4.40 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.33 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.45 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.35 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.38 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.45 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.51 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.57 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.02 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.63 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.05 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.03 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.01 secs:     370 bytes ==> POST http://request:8080/draws 
+HTTP/1.1 201     4.40 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.33 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.45 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.35 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.38 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.45 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.51 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.57 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.02 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.63 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.05 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.03 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.01 secs:     370 bytes ==> POST http://request:8080/requests
 
-HTTP/1.1 500     4.31 secs:     250 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 500     4.14 secs:     250 bytes ==> POST http://request:8080/draws 
+HTTP/1.1 500     4.31 secs:     250 bytes ==> POST http://request:8080/requests
+HTTP/1.1 500     4.14 secs:     250 bytes ==> POST http://request:8080/requests
 
-HTTP/1.1 201     4.09 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.15 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.14 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.10 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.15 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.24 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.20 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.24 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.26 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.16 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.30 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.20 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.24 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.29 secs:     370 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 500     4.32 secs:     250 bytes ==> POST http://request:8080/draws 
-HTTP/1.1 201     4.18 secs:     370 bytes ==> POST http://request:8080/draws 
+HTTP/1.1 201     4.09 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.15 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.14 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.10 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.15 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.24 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.20 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.24 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.26 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.16 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.30 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.20 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.24 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.29 secs:     370 bytes ==> POST http://request:8080/requests
+HTTP/1.1 500     4.32 secs:     250 bytes ==> POST http://request:8080/requests
+HTTP/1.1 201     4.18 secs:     370 bytes ==> POST http://request:8080/requests
 
-Lifting the server siege... 
-Transactions:                   1545 hits 
-Availability:                  71.40 % 
-Elapsed time:                  89.88 secs 
-Data transferred:               0.69 MB 
-Response time:                  5.66 secs 
-Transaction rate:              17.19 trans/sec 
-Throughput:                     0.01 MB/sec 
-Concurrency:                   97.34 
-Successful transactions:        1545 
-Failed transactions:             619 
-Longest transaction:           11.60 
-Shortest transaction:           0.01 
+Lifting the server siege...
+Transactions:                   1545 hits
+Availability:                  71.40 %
+Elapsed time:                  89.88 secs
+Data transferred:               0.69 MB
+Response time:                  5.66 secs
+Transaction rate:              17.19 trans/sec
+Throughput:                     0.01 MB/sec
+Concurrency:                   97.34
+Successful transactions:        1545
+Failed transactions:             619
+Longest transaction:           11.60
+Shortest transaction:           0.01
 
 
 운영시스템은 죽지 않고 지속적으로 CB 에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 자원을 보호하고 있음을 보여줌.  
