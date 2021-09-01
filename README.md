@@ -314,6 +314,8 @@ http http://request:8080/draws/1
 ```
 ![image](https://user-images.githubusercontent.com/87048583/131528461-c62cf09b-10de-41a0-97a8-a0965eca3545.png)
 
+## CQRS
+MyPageview를 통해 데이터를 읽는다.
 
 ## 폴리글랏 퍼시스턴스
 
