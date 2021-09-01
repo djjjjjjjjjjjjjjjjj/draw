@@ -931,9 +931,9 @@ transfer-encoding: chunked
 }
 ```
 
-#### 요청 처리결과를 통하여 Gateway 기능이 정상적으로 수행되었음을 확인할 수 있다. 
+### 요청 처리결과를 통하여 Gateway 기능이 정상적으로 수행되었음을 확인할 수 있다. 
 
-#### 요청이 정상적으로 처리되지 않는 경우( 예를 들어서 입금 요청을 했으나 계좌가 존재하지 않는 등 )
+### 요청이 정상적으로 처리되지 않는 경우( 예를 들어서 입금 요청을 했으나 계좌가 존재하지 않는 등 )
 
 요청시 파라미터로 전송된 id 값을 기준으로 기 저장된 요청 데이터를 삭제한다. 
 
@@ -970,12 +970,12 @@ Transfer-Encoding: chunked
     }
 }
 ```
-#### request 데이터가 정상적으로 삭제되었음을 확인할 수 있다. 
+### request 데이터가 정상적으로 삭제되었음을 확인할 수 있다. 
 *****
 
 ### 동기식 호출 (운영)
 
-#### 동기식 호출인 관계로 인증시스템 장애시 서비스를 처리할 수 없다. 
+### 동기식 호출인 관계로 인증시스템 장애시 서비스를 처리할 수 없다. 
 
 1) 인증 서비스 임시로 삭제한다. 
 
@@ -1041,12 +1041,12 @@ Transfer-Encoding: chunked
 }
 ```
 
-#### 테스트를 통하여 인증 서비스가 기동되지 않은 상태에서는 업무 요청이 실패함을 확인 할 수 있음.
+### 테스트를 통하여 인증 서비스가 기동되지 않은 상태에서는 업무 요청이 실패함을 확인 할 수 있음.
 *****
 
 ### Persistence Volume
 
-#### Persistence Volume 을 생성한다. 
+### Persistence Volume 을 생성한다. 
 
 ```
 root@labs-579721623:/home/project/online-bank/yaml# kubectl get pv
@@ -1058,7 +1058,7 @@ pvc-f0331c5b-0127-475f-93db-58999bb38980   1Gi        RWO            Delete     
 task-pv-volume                             100Mi      RWO            Retain           Bound    labs-579721623/aws-efs     aws-efs                 4m4s
 ```
 
-#### Persistence Volume Claim 을 생성한다. 
+### Persistence Volume Claim 을 생성한다. 
 
 ```
 root@labs-579721623:/home/project/online-bank/yaml# kubectl get pvc
@@ -1067,7 +1067,7 @@ NAME      STATUS   VOLUME           CAPACITY   ACCESS MODES   STORAGECLASS   AGE
 aws-efs   Bound    task-pv-volume   100Mi      RWO            aws-efs        101s
 ```
 
-#### Pod 로 접속하여 파일시스템 정보를 확인한다. 
+### Pod 로 접속하여 파일시스템 정보를 확인한다. 
 
 ```
 root@labs-579721623:/home/project/online-bank/yaml# kubectl get pod
@@ -1086,7 +1086,7 @@ siege                             1/1     Running            0          128m
 root@labs-579721623:/home/project/online-bank/yaml# kubectl exec -it request-646c4cc7c6-xmk59 -- /bin/bash
 ```
 
-#### 생성된 Persistence Volume 은 Mount 되지 않은 상태임을 확인한다. 
+### 생성된 Persistence Volume 은 Mount 되지 않은 상태임을 확인한다. 
 
 ```
 root@request-646c4cc7c6-xmk59:/# df -h
@@ -1101,9 +1101,9 @@ tmpfs           1.9G     0  1.9G   0% /proc/acpi
 tmpfs           1.9G     0  1.9G   0% /sys/firmware
 ```
 
-#### Persistenct Volume 이 Mount 되도록 yaml 설정파일을 변경한다. 
+### Persistenct Volume 이 Mount 되도록 yaml 설정파일을 변경한다. 
 
-#### request-deploy-vol.yaml
+### request-deploy-vol.yaml
 
 ```
     spec:
@@ -1124,14 +1124,14 @@ tmpfs           1.9G     0  1.9G   0% /sys/firmware
             claimName: aws-efs
 ```
 
-#### 변경된 yaml 파일로 서비스 재배포 한다. 
+### 변경된 yaml 파일로 서비스 재배포 한다. 
 
 ```
 root@labs-579721623:/home/project/online-bank/yaml# kubectl apply -f request-deploy-vol.yaml
 deployment.apps/request created
 ```
 
-#### Pod 로 접속하여 파일시스템 정보를 확인한다. 
+### Pod 로 접속하여 파일시스템 정보를 확인한다. 
 
 ```
 root@request-675f455d5c-t8lzd:/# df -h
@@ -1146,14 +1146,14 @@ tmpfs           1.9G     0  1.9G   0% /proc/acpi
 tmpfs           1.9G     0  1.9G   0% /sys/firmware
 ```
 
-#### 생성된 Persistence Volume 이 pod 내 정상 mount 되었음을 확인할 수 있다. 
+### 생성된 Persistence Volume 이 pod 내 정상 mount 되었음을 확인할 수 있다. 
 *****
 
 ### Liveness Prove
 
-#### request 서비스 배포시 yaml 파일내 Liveness Prove 설정을 추가한다. 
+### request 서비스 배포시 yaml 파일내 Liveness Prove 설정을 추가한다. 
 
-#### request-deploy.yaml
+### request-deploy.yaml
 
 ```
 spec:
@@ -1183,7 +1183,7 @@ spec:
             failureThreshold: 5
 ```
 
-#### Liveness Prove 설정 정상 적용여부를 확인하기 위해서 기존에 생성된 request pod 삭제시
+### Liveness Prove 설정 정상 적용여부를 확인하기 위해서 기존에 생성된 request pod 삭제시
 
 정상적으로 재생성 되는지 여부를 확인한다. 
 
@@ -1200,14 +1200,14 @@ request-675f455d5c-t8lzd          1/1     Running   0          2m10s
 siege                             1/1     Running   0          137m
 ```
 
-#### request pod 를 삭제한다. 
+### request pod 를 삭제한다. 
 
 ```
 root@labs-579721623:/home/project/online-bank/yaml# kubectl delete pod request-675f455d5c-t8lzd
 pod "request-675f455d5c-t8lzd" deleted
 ```
 
-#### request pod 삭제 후 pod 정보를 재조회 한다. 
+### request pod 삭제 후 pod 정보를 재조회 한다. 
 
 ```
 root@labs-579721623:/home/project/online-bank/yaml# kubectl get pod
@@ -1222,4 +1222,4 @@ request-675f455d5c-zqhwq          0/1     Running   0          13s
 siege                             1/1     Running   0          138m
 ```
 
-#### request pod Liveness Prove 설정이 적용되어 삭제 후 다른 이름으로 재생성 되었음을 확인할 수 있다. 
+### request pod Liveness Prove 설정이 적용되어 삭제 후 다른 이름으로 재생성 되었음을 확인할 수 있다. 
