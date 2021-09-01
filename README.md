@@ -652,7 +652,8 @@ root@siege:/# siege -v -c100 -t90S -r10 --content-type "application/json" 'http:
 {"itemNo":"1111","price":"100000","drawDate":"2021-08-28","size":"275","drawId":"001","drawName":"NIKE jordan 1". "userId":"dj14"}' 
 ```
 ( 동시사용자 100명, 90초간 진행 )
- 
+
+
 HTTP/1.1 500     4.46 secs:     250 bytes ==> POST http://request:8080/draws 
 HTTP/1.1 500     3.88 secs:     250 bytes ==> POST http://request:8080/draws 
 HTTP/1.1 500     3.69 secs:     250 bytes ==> POST http://request:8080/draws 
