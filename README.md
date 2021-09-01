@@ -158,8 +158,7 @@ NIKE THE DRAW 시스템 커버하기
 
 ## 헥사고날 아키텍처 다이어그램 도출
     
-![image](https://user-images.githubusercontent.com/87048583/131523305-059e4c80-f8e4-44b0-a82d-b797b2658cc8.png)
-
+![image](https://user-images.githubusercontent.com/87048583/131671677-fc1b4d22-8cb2-4da3-83da-43ec20495ecd.png)
 
 
 # 구현:
