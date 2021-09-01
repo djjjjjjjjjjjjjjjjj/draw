@@ -300,7 +300,7 @@ public interface DrawRepository extends PagingAndSortingRepository<Draw, Long>{
 }
 
 ```
-3.적용 후 REST API 의 테스트
+3.적용 후 REST API 의 테스트  
  draw 서비스의 요청처리
 ```
 http localhost:8080/draws itemNo="1111" price="100000" drawDate="2021-08-28" size=275 drawId="001" drawName="NIKE jordan 1" userId="dj14"
