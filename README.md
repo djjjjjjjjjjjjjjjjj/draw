@@ -396,13 +396,16 @@ public class MyPageViewHandler {
 
 ```
 MyPage 
+
 ![image](https://user-images.githubusercontent.com/87048583/131695481-69824863-183e-469c-a5ba-74d912f70c2e.png)
 
 draw->raffle 
+
 ![image](https://user-images.githubusercontent.com/87048583/131695641-eb0459b2-7dac-40a8-966f-11a194c7d54b.png)
 ![image](https://user-images.githubusercontent.com/87048583/131696524-f7f80fed-4766-449d-85c3-3d6da84fbbc9.png)
 
 mypage
+
 ![image](https://user-images.githubusercontent.com/87048583/131695692-a4cc9b58-1c0e-4f93-91a5-9d87e7328d95.png)
 
 ## 폴리글랏 퍼시스턴스
