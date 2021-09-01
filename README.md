@@ -316,6 +316,95 @@ http http://request:8080/draws/1
 ![image](https://user-images.githubusercontent.com/87048583/131528461-c62cf09b-10de-41a0-97a8-a0965eca3545.png)
 
 
+## CQRS
+draw 서비스로 CUD를 담당하고 R은 viewpage용 myPage에서 조회
+
+MyPageViewHandler.java
+```java
+@Service
+public class MyPageViewHandler {
+
+    @Autowired
+    private MyPageRepository myPageRepository;
+
+    @StreamListener(KafkaProcessor.INPUT)
+    public void whenRaffleRequested_then_UPDATE(@Payload RaffleRequested raffleRequested) {
+        try {
+            if (!raffleRequested.validate()) return;
+            System.out.println("\nMyPage.MyPageViewHandler.24\n##############################################");
+            System.out.println("UPDATE when RaffleRequested");
+            System.out.println("##############################################\n");
+            System.out.println("\nMyPage.MyPageViewHandler.27\n##### listener RaffleRequested : " + raffleRequested.toJson() + "\n");   
+
+            MyPage myPage = myPageRepository.findByItemNo( raffleRequested.getItemNo() );
+            if( myPage == null ) myPage = new MyPage();            
+
+            myPage.setUserId( raffleRequested.getUserId() );
+            myPage.setItemNo( raffleRequested.getItemNo() );
+            myPage.setDrawDate( raffleRequested.getRaffleDate() );
+            myPage.setDrawResult( raffleRequested.getWin() );
+
+            if (raffleRequested.getWin() == true ) {
+                myPage.setWin( 1 );
+                myPage.setLoss( 0 );
+            }
+            else{
+                myPage.setWin( 0 );
+                myPage.setLoss( 1 );
+            }
+            myPage.setDrawStatus("Raffle Completed");
+            myPageRepository.save(myPage);
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @StreamListener(KafkaProcessor.INPUT)
+    public void whenRaffleDropped_then_UPDATE(@Payload RaffleDropped raffleDropped) {
+        try {
+            if (!raffleDropped.validate()) return;
+            System.out.println("\nMyPage.MyPageViewHandler.50\n##############################################");
+            System.out.println("UPDATE when raffleDropped");
+            System.out.println("##############################################\n");
+            System.out.println("\nMyPage.MyPageViewHandler.53\n##### listener raffleDropped : " + raffleDropped.toJson() + "\n");   
+                        
+            // 요청 취소의 경우 ItemNo가 존재하는 경우에만 상태변경
+            MyPage myPage = myPageRepository.findByItemNo( raffleDropped.getItemNo() );
+            if( myPage != null ){  
+                myPage.setUserId( raffleDropped.getUserId() );
+                myPage.setItemNo( raffleDropped.getItemNo() );
+                myPage.setDrawDate( raffleDropped.getRaffleDate() );
+                myPage.setDrawResult( raffleDropped.getWin() );
+                if (raffleDropped.getWin() == true ) {
+                    myPage.setWin( 1 );
+                    myPage.setLoss( 0 );
+                }
+                else{
+                    myPage.setWin( 0 );
+                    myPage.setLoss( 1 );
+                }
+                myPage.setDrawStatus("Raffle Dropped");
+                myPageRepository.save(myPage);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+}
+
+```
+MyPage 
+![image](https://user-images.githubusercontent.com/87048583/131695481-69824863-183e-469c-a5ba-74d912f70c2e.png)
+
+draw->raffle 
+![image](https://user-images.githubusercontent.com/87048583/131695641-eb0459b2-7dac-40a8-966f-11a194c7d54b.png)
+![image](https://user-images.githubusercontent.com/87048583/131696524-f7f80fed-4766-449d-85c3-3d6da84fbbc9.png)
+
+mypage
+![image](https://user-images.githubusercontent.com/87048583/131695692-a4cc9b58-1c0e-4f93-91a5-9d87e7328d95.png)
+
 ## 폴리글랏 퍼시스턴스
 
 
