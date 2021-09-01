@@ -401,7 +401,7 @@ KakaoDAO.java 생성된 함수와 동일한 package 경로와 함수명으로 se
 </mapper>
 ```
   
-KafkaService.java
+KafkaService.java 
 카프카에서 수신 받은 메세지를 sqlite에 저장
 
 ```java  
@@ -459,7 +459,7 @@ ENTRYPOINT ["java","-Xmx400M","-Djava.security.egd=file:/dev/./urandom","-jar","
 
 이용하여 호출하도록 한다.
 
-결제서비스를 호출하기 위하여 FeignClient 를 이용하여 Service 대행 인터페이스 구현
+결제서비스를 호출하기 위하여 FeignClient 를 이용하여 Service 대행 인터페이스 구현  
 
 AuthService.java
 
@@ -501,7 +501,7 @@ Ordert.java
 
 주문 처리를 위하여 인증 기능이 블로킹 되지 않아도록 처리한다.
 
-이를 위하여 로 인증완료 되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
+이를 위하여 로 인증완료 되었다는 도메인 이벤트를 카프카로 송출한다(Publish)   
 Auth.java
 ```java
  @PrePersist
@@ -550,7 +550,7 @@ Auth.java
 
     }
 ```
-주문 서비스에서는 인증 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다
+주문 서비스에서는 인증 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다   
 PolicyHandler.java
 
 ```java
