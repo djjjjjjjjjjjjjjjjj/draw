@@ -490,6 +490,12 @@ Ordert.java
     }
 ```
 
+![image](https://user-images.githubusercontent.com/87048583/131611825-955848f6-2968-4e9e-91f2-e0835fbe6cdb.png)
+![image](https://user-images.githubusercontent.com/87048583/131611850-76059c79-3e02-402b-9458-8b7b3a6fa6f3.png)
+![image](https://user-images.githubusercontent.com/87048583/131611872-2ad413ba-afe7-4c7e-94b8-891b5cc96aca.png)
+
+
+
 ## 비동기식 호출
 인증성공 후 주문 시스템으로 이를 알려주는 행위는 동기식이 아니라 비 동기식으로 처리하여
 
@@ -586,6 +592,11 @@ public class PolicyHandler{
 
 }
 ```
+![image](https://user-images.githubusercontent.com/87048583/131611917-f0badd89-fc45-47bc-9982-81c181998058.png)
+![image](https://user-images.githubusercontent.com/87048583/131611943-ef89d8ed-cf8f-4c71-9083-b70025a2a16a.png)
+![image](https://user-images.githubusercontent.com/87048583/131611973-e0d7f9ca-6c00-4f6c-bd11-fbc7195bd535.png)
+![image](https://user-images.githubusercontent.com/87048583/131611998-734fff9a-11d8-4f24-a427-f1349d658da7.png)
+
 
 # 운영
 
