@@ -696,14 +696,23 @@ public class PolicyHandler{
 ### Gateway 기능이 정상적으로 수행되는지 확인하기 위하여 Gateway를 통하여 요청서비스를 호출한다
 ```
 root@siege:/# http gateway:8080/draws itemNo="1111" price="100000" drawDate="2021-08-28" size=275 drawId="01" drawName="NIKE jordan 1" userId="dj14"
-![image](https://user-images.githubusercontent.com/87048583/131790069-f51e6ca7-c75a-4385-8b0e-fa20b2cd1b71.png)
-
 ```
+![image](https://user-images.githubusercontent.com/87048583/131790069-f51e6ca7-c75a-4385-8b0e-fa20b2cd1b71.png)
 ![image](https://user-images.githubusercontent.com/87048583/131790033-a5c47655-22ce-49b0-b1f4-3ec4fb645da0.png)
+
+요청 처리결과를 통하여 Gateway 기능이 정상적으로 수행되었음을 확인할 수 있다.
+요청이 정상적으로 처리되지 않는 경우
+요청시 파라미터로 전송된 id 값을 기준으로 기 저장된 요청 데이터를 삭제한다.
+
+![image](https://user-images.githubusercontent.com/87048583/131791221-1de8e4ca-837e-484d-96e9-5de750ea585c.png)
+![image](https://user-images.githubusercontent.com/87048583/131791291-40f79f73-fc26-4cc2-8a09-c323dcd8ef85.png)
+![image](https://user-images.githubusercontent.com/87048583/131791324-444244d2-9c05-4014-9b64-46f82bf81c2d.png)
+
+Gateway 테스트시 존재하지 않는 응모요청코드에  시도하였으며 요청이 정상적으로 처리되지 못한 관계로 기 저장된 데이터가 삭제 처리 된다.
+
 
 
 ##  서킷 브레이킹 
-
 
 1.Spring FeignClient + Hystrix 옵션을 사용하여 구현
 2.요청-인증시 Request/Response 로 연동하여 구현이 되어있으며 요청이 과도할 경우 CB를 통하여 장애격리
