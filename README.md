@@ -741,33 +741,11 @@ service/auth exposed
 4) 요청처리 결과를 확인한다. 
 
 ```
-root@siege:/# http http://request:8080/requests accountNo="1111" requestId="01" requestName="Deposit" amountOfMoney=10000 userId="1@sk.com" userName="sam" userPassword="1234"
-
-HTTP/1.1 201 
-Content-Type: application/json;charset=UTF-8
-Date: Thu, 19 Aug 2021 07:02:31 GMT
-Location: http://request:8080/requests/4
-Transfer-Encoding: chunked
-
-{
-    "_links": {
-        "request": {
-            "href": "http://request:8080/requests/4"
-        },
-        "self": {
-            "href": "http://request:8080/requests/4"
-        }
-    },
-    "accountNo": "1111",
-    "amountOfMoney": 10000,
-    "requestDate": null,
-    "requestId": "01",
-    "requestName": "Deposit",
-    "userId": "1@sk.com",
-    "userName": "sam",
-    "userPassword": "1234"
-}
+root@siege:/# http order:8080/orders itemNo="1114" price="10000" size=275 userId="dj@sk.com" userPassword="1234"
 ```
+
+![image](https://user-images.githubusercontent.com/87048583/131814095-e07e916f-fd20-4072-aa29-f58c68a5ed22.png)
+
 
 ### 테스트를 통하여 인증 서비스가 기동되지 않은 상태에서는 업무 요청이 실패함을 확인 할 수 있음.
 
