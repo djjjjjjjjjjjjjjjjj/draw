@@ -852,3 +852,29 @@ root@labs-1621740876:/home/project/draw# kubectl exec -it draw-648bcdbd5d-q6ckw 
 
 ### 오토스케일 아웃
 
+앞서 CB 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에
+이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다.
+
+결제서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다.
+
+설정은 CPU 사용량이 50프로를 넘어서면 replica 를 10개까지 늘려준다
+```
+root@labs-1621740876:/home/project/draw# kubectl autoscale deployment draw --cpu-percent=50 --min=1 --max=10
+```
+![image](https://user-images.githubusercontent.com/87048583/131863699-88214261-0b41-4c38-b315-65300d111824.png)
+![image](https://user-images.githubusercontent.com/87048583/131863712-b0ea798d-2069-4ab0-b3be-4e4ed5212365.png)
+![image](https://user-images.githubusercontent.com/87048583/131863727-4894363c-4378-479d-83b0-378d977db47a.png)
+
+#### 부하 테스트 진행
+```
+root@siege:/# siege -v -c100 -t90S -r10 --content-type "application/json" 'http://draw:8080/draws POST {"itemNo":"2222","price":"199000","drawDatw":"2021-09-02","size":275,"drawId":"1","drawName":"NikeXSoctt jordan,"userId":"dj80@sk.com"}' ( 동시사용자 100명, 90초간 진행 )
+```
+![image](https://user-images.githubusercontent.com/87048583/131863908-c413d0f2-6a22-4cf5-9e33-a48605225916.png)
+
+Terminal 을 추가하여 오토스케일링 현황을 모니터링 한다. ( watch kubectl get pod )
+부하 테스트 진행전
+![image](https://user-images.githubusercontent.com/87048583/131863993-70c85b39-bc9f-48d9-9729-77371ed1ec62.png)
+부하 테스트 진행 후
+![image](https://user-images.githubusercontent.com/87048583/131864015-cf8d408a-b6e5-4a11-82b7-8487168e16d7.png)
+오토 스케일링이 정상적으로 수행되었음을 확인할 수 있다.
+
