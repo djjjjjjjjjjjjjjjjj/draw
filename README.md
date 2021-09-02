@@ -697,7 +697,6 @@ public class PolicyHandler{
 ```
 root@siege:/# http gateway:8080/draws itemNo="1111" price="100000" drawDate="2021-08-28" size=275 drawId="01" drawName="NIKE jordan 1" userId="dj14"
 ```
-![image](https://user-images.githubusercontent.com/87048583/131790069-f51e6ca7-c75a-4385-8b0e-fa20b2cd1b71.png)
 ![image](https://user-images.githubusercontent.com/87048583/131790033-a5c47655-22ce-49b0-b1f4-3ec4fb645da0.png)
 
 요청 처리결과를 통하여 Gateway 기능이 정상적으로 수행되었음을 확인할 수 있다.
