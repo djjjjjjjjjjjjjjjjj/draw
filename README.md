@@ -847,7 +847,7 @@ root@labs-1621740876:/home/project/draw# kubectl exec -it draw-648bcdbd5d-q6ckw 
 ```
 ![image](https://user-images.githubusercontent.com/87048583/131855639-66f67be2-cad1-4cb7-a9ff-e386610d4751.png)
 
-### 생성된 Persistence Volume 이 pod 내 정상 mount 되었음을 확인할 수 있다. 
+# 생성된 Persistence Volume 이 pod 내 정상 mount 되었음을 확인할 수 있다. 
 
 
 ### 오토스케일 아웃
