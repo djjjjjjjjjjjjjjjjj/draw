@@ -717,35 +717,26 @@ Gateway 테스트시 존재하지 않는 응모요청코드에  시도하였으�
 1) 인증 서비스 임시로 삭제한다. 
 
 ```
-root@labs-579721623:/home/project/online-bank/yaml# kubectl delete service auth
+root@labs-1621740876:/home/project/draw# kubectl delete service auth
 service "auth" deleted
 ```
+![image](https://user-images.githubusercontent.com/87048583/131793237-f12213d6-dde3-498b-b111-c8359ca1e5e0.png)
 
 2) 요청 처리결과를 확인한다.
 
 ```
-root@siege:/# http request:8080/requests accountNo="1111" requestId="01" requestName="Deposit" amountOfMoney=10000 userId="1@sk.com" userName="sam" userPassword="1234"
-HTTP/1.1 500 
-Connection: close
-Content-Type: application/json;charset=UTF-8
-Date: Thu, 19 Aug 2021 06:59:08 GMT
-Transfer-Encoding: chunked
-
-{
-    "error": "Internal Server Error",
-    "message": "Could not commit JPA transaction; nested exception is javax.persistence.RollbackException: Error while committing the transaction",
-    "path": "/requests",
-    "status": 500,
-    "timestamp": "2021-08-19T06:59:08.624+0000"
-}
+root@siege:/# http order:8080/orders itemNo="1112" price="10000" size=275 userId="dj@sk.com" userPassword="1234""
 ```
+![image](https://user-images.githubusercontent.com/87048583/131793457-369f82cc-21f9-4a78-a6c6-76a111d94a05.png)
+
 
 3) 인증서비스 재기동 한다. 
 
 ```
-root@labs-579721623:/home/project/online-bank/yaml# kubectl expose deploy auth --type="LoadBalancer" --port=8080
+root@labs-1621740876:/home/project/draw# kubectl expose deploy auth --type="LoadBalancer" --port=8080
 service/auth exposed
 ```
+![image](https://user-images.githubusercontent.com/87048583/131793534-3bcb4a38-ddfd-4406-ad99-eba5d81c879f.png)
 
 4) 요청처리 결과를 확인한다. 
 
