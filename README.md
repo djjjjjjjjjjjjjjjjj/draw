@@ -692,10 +692,14 @@ public class PolicyHandler{
 
 # 운영
 
-## CI/CD 설정
+## Gateway
+### Gateway 기능이 정상적으로 수행되는지 확인하기 위하여 Gateway를 통하여 요청서비스를 호출한다
+```
+root@siege:/# http gateway:8080/draws itemNo="1111" price="100000" drawDate="2021-08-28" size=275 drawId="01" drawName="NIKE jordan 1" userId="dj14"
+![image](https://user-images.githubusercontent.com/87048583/131790069-f51e6ca7-c75a-4385-8b0e-fa20b2cd1b71.png)
 
-
-각 구현체들은 각자의 source repository 에 구성되었고, 사용한 CI/CD 플랫폼은 GCP를 사용하였으며, pipeline build script 는 각 프로젝트 폴더 이하에 cloudbuild.yml 에 포함되었다.
+```
+![image](https://user-images.githubusercontent.com/87048583/131790033-a5c47655-22ce-49b0-b1f4-3ec4fb645da0.png)
 
 
 ##  서킷 브레이킹 
