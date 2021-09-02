@@ -756,14 +756,26 @@ root@siege:/#  siege -v -c100 -t90S -r10 --content-type "application/json" 'http
 ```
 ![image](https://user-images.githubusercontent.com/87048583/131841608-2ab940c9-1cc6-4b9e-ac93-f72d6746cd93.png)
 
-부하테스트중 추가 생성한 Terminal 에서 readiness 설정되지 않은 버젼으로 재배포 한다.
+1. 부하테스트중 추가 생성한 Terminal 에서 readiness 설정되지 않은 버젼으로 재배포 한다.
 ```
 root@labs-1621740876:/home/project/draw# kubectl apply -f order-redeploy.yaml
 ```
 ![image](https://user-images.githubusercontent.com/87048583/131841542-c7e86352-e6ae-487a-9caf-12501cf2aa3d.png)
 
 
+2. 부하테스트중 추가 생성한 Terminal 에서 readiness 설정된 버젼으로 재배포 한다.
+```
+root@labs-1621740876:/home/project/draw# kubectl apply -f order-deploy.yaml
+```
+![image](https://user-images.githubusercontent.com/87048583/131842391-705fb451-7396-4d0f-9934-eb22877eb73f.png)
 
+![image](https://user-images.githubusercontent.com/87048583/131842358-0b643e54-ee74-4d60-8494-e8f04e12fe41.png)
+
+부하테스트 결과
+
+![image](https://user-images.githubusercontent.com/87048583/131842474-b2858d96-4b61-43de-a571-64daf2610fb1.png)
+
+중단없이 완료됨
 
 
 ##  서킷 브레이킹 
