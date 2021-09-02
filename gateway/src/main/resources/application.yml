@@ -1,0 +1,82 @@
+server:
+  port: 8088
+
+---
+
+spring:
+  profiles: default
+  cloud:
+    gateway:
+      routes:
+        - id: Draw
+          uri: http://localhost:8081
+          predicates:
+            - Path=/draws/** 
+        - id: Raffle
+          uri: http://localhost:8082
+          predicates:
+            - Path=/raffles/** 
+        - id: MyPage
+          uri: http://localhost:8083
+          predicates:
+            - Path= /myPages/**
+        - id: Order
+          uri: http://localhost:8084
+          predicates:
+            - Path=/orders/** 
+        - id: Authentication
+          uri: http://localhost:8085
+          predicates:
+            - Path=/auths/** 
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+
+---
+
+spring:
+  profiles: docker
+  cloud:
+    gateway:
+      routes:
+        - id: Draw
+          uri: http://Draw:8080
+          predicates:
+            - Path=/draws/** 
+        - id: Raffle
+          uri: http://Raffle:8080
+          predicates:
+            - Path=/raffles/** 
+        - id: MyPage
+          uri: http://MyPage:8080
+          predicates:
+            - Path= /myPages/**
+        - id: Order
+          uri: http://Order:8080
+          predicates:
+            - Path=/orders/** 
+        - id: Authentication
+          uri: http://Authentication:8080
+          predicates:
+            - Path=/auths/** 
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+server:
+  port: 8080

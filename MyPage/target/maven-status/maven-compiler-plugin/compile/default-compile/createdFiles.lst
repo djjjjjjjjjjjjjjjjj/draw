@@ -1,0 +1,10 @@
+draw\MyPage.class
+draw\PolicyHandler.class
+draw\RaffleRequested.class
+draw\MyPageRepository.class
+draw\RaffleDropped.class
+draw\AbstractEvent.class
+draw\config\kafka\KafkaProcessor.class
+draw\MyPageApplication.class
+draw\AbstractEvent$1.class
+draw\MyPageViewHandler.class
