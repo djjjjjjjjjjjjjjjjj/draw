@@ -1,0 +1,11 @@
+draw\Auth$1.class
+draw\PolicyHandler.class
+draw\AuthenticationApplication.class
+draw\AuthRepository.class
+draw\AbstractEvent.class
+draw\config\kafka\KafkaProcessor.class
+draw\AuthController.class
+draw\AuthCancelled.class
+draw\AbstractEvent$1.class
+draw\AuthCertified.class
+draw\Auth.class
