@@ -710,6 +710,75 @@ root@siege:/# http gateway:8080/draws itemNo="1111" price="100000" drawDate="202
 Gateway 테스트시 존재하지 않는 응모요청코드에  시도하였으며 요청이 정상적으로 처리되지 못한 관계로 기 저장된 데이터가 삭제 처리 된다.
 
 
+### 동기식 호출 (운영)
+
+### 동기식 호출인 관계로 인증시스템 장애시 서비스를 처리할 수 없다. 
+
+1) 인증 서비스 임시로 삭제한다. 
+
+```
+root@labs-579721623:/home/project/online-bank/yaml# kubectl delete service auth
+service "auth" deleted
+```
+
+2) 요청 처리결과를 확인한다.
+
+```
+root@siege:/# http request:8080/requests accountNo="1111" requestId="01" requestName="Deposit" amountOfMoney=10000 userId="1@sk.com" userName="sam" userPassword="1234"
+HTTP/1.1 500 
+Connection: close
+Content-Type: application/json;charset=UTF-8
+Date: Thu, 19 Aug 2021 06:59:08 GMT
+Transfer-Encoding: chunked
+
+{
+    "error": "Internal Server Error",
+    "message": "Could not commit JPA transaction; nested exception is javax.persistence.RollbackException: Error while committing the transaction",
+    "path": "/requests",
+    "status": 500,
+    "timestamp": "2021-08-19T06:59:08.624+0000"
+}
+```
+
+3) 인증서비스 재기동 한다. 
+
+```
+root@labs-579721623:/home/project/online-bank/yaml# kubectl expose deploy auth --type="LoadBalancer" --port=8080
+service/auth exposed
+```
+
+4) 요청처리 결과를 확인한다. 
+
+```
+root@siege:/# http http://request:8080/requests accountNo="1111" requestId="01" requestName="Deposit" amountOfMoney=10000 userId="1@sk.com" userName="sam" userPassword="1234"
+
+HTTP/1.1 201 
+Content-Type: application/json;charset=UTF-8
+Date: Thu, 19 Aug 2021 07:02:31 GMT
+Location: http://request:8080/requests/4
+Transfer-Encoding: chunked
+
+{
+    "_links": {
+        "request": {
+            "href": "http://request:8080/requests/4"
+        },
+        "self": {
+            "href": "http://request:8080/requests/4"
+        }
+    },
+    "accountNo": "1111",
+    "amountOfMoney": 10000,
+    "requestDate": null,
+    "requestId": "01",
+    "requestName": "Deposit",
+    "userId": "1@sk.com",
+    "userName": "sam",
+    "userPassword": "1234"
+}
+```
+
+### 테스트를 통하여 인증 서비스가 기동되지 않은 상태에서는 업무 요청이 실패함을 확인 할 수 있음.
 
 ##  서킷 브레이킹 
 
@@ -1080,75 +1149,7 @@ Transfer-Encoding: chunked
 ### request 데이터가 정상적으로 삭제되었음을 확인할 수 있다. 
 *****
 
-### 동기식 호출 (운영)
 
-### 동기식 호출인 관계로 인증시스템 장애시 서비스를 처리할 수 없다. 
-
-1) 인증 서비스 임시로 삭제한다. 
-
-```
-root@labs-579721623:/home/project/online-bank/yaml# kubectl delete service auth
-service "auth" deleted
-```
-
-2) 요청 처리결과를 확인한다.
-
-```
-root@siege:/# http request:8080/requests accountNo="1111" requestId="01" requestName="Deposit" amountOfMoney=10000 userId="1@sk.com" userName="sam" userPassword="1234"
-HTTP/1.1 500 
-Connection: close
-Content-Type: application/json;charset=UTF-8
-Date: Thu, 19 Aug 2021 06:59:08 GMT
-Transfer-Encoding: chunked
-
-{
-    "error": "Internal Server Error",
-    "message": "Could not commit JPA transaction; nested exception is javax.persistence.RollbackException: Error while committing the transaction",
-    "path": "/requests",
-    "status": 500,
-    "timestamp": "2021-08-19T06:59:08.624+0000"
-}
-```
-
-3) 인증서비스 재기동 한다. 
-
-```
-root@labs-579721623:/home/project/online-bank/yaml# kubectl expose deploy auth --type="LoadBalancer" --port=8080
-service/auth exposed
-```
-
-4) 요청처리 결과를 확인한다. 
-
-```
-root@siege:/# http http://request:8080/requests accountNo="1111" requestId="01" requestName="Deposit" amountOfMoney=10000 userId="1@sk.com" userName="sam" userPassword="1234"
-
-HTTP/1.1 201 
-Content-Type: application/json;charset=UTF-8
-Date: Thu, 19 Aug 2021 07:02:31 GMT
-Location: http://request:8080/requests/4
-Transfer-Encoding: chunked
-
-{
-    "_links": {
-        "request": {
-            "href": "http://request:8080/requests/4"
-        },
-        "self": {
-            "href": "http://request:8080/requests/4"
-        }
-    },
-    "accountNo": "1111",
-    "amountOfMoney": 10000,
-    "requestDate": null,
-    "requestId": "01",
-    "requestName": "Deposit",
-    "userId": "1@sk.com",
-    "userName": "sam",
-    "userPassword": "1234"
-}
-```
-
-### 테스트를 통하여 인증 서비스가 기동되지 않은 상태에서는 업무 요청이 실패함을 확인 할 수 있음.
 *****
 
 ### Persistence Volume
