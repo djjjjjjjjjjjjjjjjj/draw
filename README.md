@@ -777,6 +777,128 @@ root@labs-1621740876:/home/project/draw# kubectl apply -f order-deploy.yaml
 
 중단없이 완료됨
 
+### Persistence Volume
+
+### Persistence Volume 을 생성한다. 
+
+```
+root@labs-579721623:/home/project/online-bank/yaml# kubectl get pv
+
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                      STORAGECLASS   REASON   AGE
+pvc-60c0deaa-241e-443d-a770-2c4890b0d9db   1Gi        RWO            Delete           Bound    kafka/datadir-my-kafka-2   gp2                     174m
+pvc-ce2fe4aa-be29-4c82-8637-7d247b243456   1Gi        RWO            Delete           Bound    kafka/datadir-my-kafka-1   gp2                     175m
+pvc-f0331c5b-0127-475f-93db-58999bb38980   1Gi        RWO            Delete           Bound    kafka/datadir-my-kafka-0   gp2                     177m
+task-pv-volume                             100Mi      RWO            Retain           Bound    labs-579721623/aws-efs     aws-efs                 4m4s
+```
+
+### Persistence Volume Claim 을 생성한다. 
+
+```
+root@labs-579721623:/home/project/online-bank/yaml# kubectl get pvc
+
+NAME      STATUS   VOLUME           CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+aws-efs   Bound    task-pv-volume   100Mi      RWO            aws-efs        101s
+```
+
+### Pod 로 접속하여 파일시스템 정보를 확인한다. 
+
+```
+root@labs-579721623:/home/project/online-bank/yaml# kubectl get pod
+
+NAME                              READY   STATUS             RESTARTS   AGE
+account-6b844c4f44-gdsvd          1/1     Running            0          76m
+auth-7c55b8b7b9-9r6bb             1/1     Running            0          76m
+efs-provisioner-fbcc88cb8-zrlzx   1/1     Running            0          10m
+gateway-55bd75dfb9-cwlvg          1/1     Running            0          73m
+history-77cc54b895-v5nqm          1/1     Running            0          75m
+mypage-7bc648bd4d-5psgz           1/1     Running            0          73m
+request-5cdc6474bf-p76tr          0/1     ImagePullBackOff   0          25m
+request-646c4cc7c6-xmk59          1/1     Running            0          28m
+siege                             1/1     Running            0          128m
+
+root@labs-579721623:/home/project/online-bank/yaml# kubectl exec -it request-646c4cc7c6-xmk59 -- /bin/bash
+```
+
+### 생성된 Persistence Volume 은 Mount 되지 않은 상태임을 확인한다. 
+
+```
+root@request-646c4cc7c6-xmk59:/# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          80G  4.2G   76G   6% /
+tmpfs            64M     0   64M   0% /dev
+tmpfs           1.9G     0  1.9G   0% /sys/fs/cgroup
+/dev/nvme0n1p1   80G  4.2G   76G   6% /etc/hosts
+shm              64M     0   64M   0% /dev/shm
+tmpfs           1.9G   12K  1.9G   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs           1.9G     0  1.9G   0% /proc/acpi
+tmpfs           1.9G     0  1.9G   0% /sys/firmware
+```
+
+### Persistenct Volume 이 Mount 되도록 yaml 설정파일을 변경한다. 
+
+### request-deploy-vol.yaml
+
+```
+    spec:
+      containers:
+        - name: request
+          image: 879772956301.dkr.ecr.ap-northeast-2.amazonaws.com/request
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+...
+          volumeMounts:
+          - mountPath: "/mnt/aws"
+            name: volume
+...
+      volumes:
+        - name: volume
+          persistentVolumeClaim:
+            claimName: aws-efs
+```
+
+### 변경된 yaml 파일로 서비스 재배포 한다. 
+
+```
+root@labs-579721623:/home/project/online-bank/yaml# kubectl apply -f request-deploy-vol.yaml
+deployment.apps/request created
+```
+
+### Pod 로 접속하여 파일시스템 정보를 확인한다. 
+
+```
+root@request-675f455d5c-t8lzd:/# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          80G  4.1G   76G   6% /
+tmpfs            64M     0   64M   0% /dev
+tmpfs           1.9G     0  1.9G   0% /sys/fs/cgroup
+/dev/nvme0n1p1   80G  4.1G   76G   6% /mnt/aws
+shm              64M     0   64M   0% /dev/shm
+tmpfs           1.9G   12K  1.9G   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs           1.9G     0  1.9G   0% /proc/acpi
+tmpfs           1.9G     0  1.9G   0% /sys/firmware
+```
+
+### 생성된 Persistence Volume 이 pod 내 정상 mount 되었음을 확인할 수 있다. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ##  서킷 브레이킹 
 
@@ -1069,188 +1191,6 @@ Longest transaction:            2.72
 Shortest transaction:           0.00
 배포중 Availability 100%를 보이며 무정지 재배포가 정상적으로 성공하였다.
  
- ### Gateway / Corelation
-
-#### Gateway 기능이 정상적으로 수행되는지 확인하기 위하여 Gateway를 통하여 요청서비스를 호출한다.  
-
-```
-root@siege:/# http gateway:8080/requests accountNo="1111" requestId="01" requestName="Deposit" amountOfMoney=10000 userId="1@sk.com" userName="sam" userPassword="1234"
-
-HTTP/1.1 201 Created
-Content-Type: application/json;charset=UTF-8
-Date: Thu, 19 Aug 2021 06:54:01 GMT
-Location: http://request:8080/requests/2
-transfer-encoding: chunked
-
-{
-    "_links": {
-        "request": {
-            "href": "http://request:8080/requests/2"
-        },
-        "self": {
-            "href": "http://request:8080/requests/2"
-        }
-    },
-    "accountNo": "1111",
-    "amountOfMoney": 10000,
-    "requestDate": null,
-    "requestId": "01",
-    "requestName": "Deposit",
-    "userId": "1@sk.com",
-    "userName": "sam",
-    "userPassword": "1234"
-}
-```
-
-### 요청 처리결과를 통하여 Gateway 기능이 정상적으로 수행되었음을 확인할 수 있다. 
-
-### 요청이 정상적으로 처리되지 않는 경우( 예를 들어서 입금 요청을 했으나 계좌가 존재하지 않는 등 )
-
-요청시 파라미터로 전송된 id 값을 기준으로 기 저장된 요청 데이터를 삭제한다. 
-
-Gateway 테스트시 존재하지 않는 계좌에 입금을 시도하였으며 요청이 정상적으로 처리되지 못한 관계로
-
-기 저장된 데이터가 삭제 처리 된다. 
-
-```
-root@siege:/# http http://request:8080/requests
-
-HTTP/1.1 200 
-Content-Type: application/hal+json;charset=UTF-8
-Date: Thu, 19 Aug 2021 06:54:56 GMT
-Transfer-Encoding: chunked
-
-{
-    "_embedded": {
-        "requests": []
-    },
-    "_links": {
-        "profile": {
-            "href": "http://request:8080/profile/requests"
-        },
-        "self": {
-            "href": "http://request:8080/requests{?page,size,sort}",
-            "templated": true
-        }
-    },
-    "page": {
-        "number": 0,
-        "size": 20,
-        "totalElements": 0,
-        "totalPages": 0
-    }
-}
-```
-### request 데이터가 정상적으로 삭제되었음을 확인할 수 있다. 
-*****
-
-
-*****
-
-### Persistence Volume
-
-### Persistence Volume 을 생성한다. 
-
-```
-root@labs-579721623:/home/project/online-bank/yaml# kubectl get pv
-
-NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                      STORAGECLASS   REASON   AGE
-pvc-60c0deaa-241e-443d-a770-2c4890b0d9db   1Gi        RWO            Delete           Bound    kafka/datadir-my-kafka-2   gp2                     174m
-pvc-ce2fe4aa-be29-4c82-8637-7d247b243456   1Gi        RWO            Delete           Bound    kafka/datadir-my-kafka-1   gp2                     175m
-pvc-f0331c5b-0127-475f-93db-58999bb38980   1Gi        RWO            Delete           Bound    kafka/datadir-my-kafka-0   gp2                     177m
-task-pv-volume                             100Mi      RWO            Retain           Bound    labs-579721623/aws-efs     aws-efs                 4m4s
-```
-
-### Persistence Volume Claim 을 생성한다. 
-
-```
-root@labs-579721623:/home/project/online-bank/yaml# kubectl get pvc
-
-NAME      STATUS   VOLUME           CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-aws-efs   Bound    task-pv-volume   100Mi      RWO            aws-efs        101s
-```
-
-### Pod 로 접속하여 파일시스템 정보를 확인한다. 
-
-```
-root@labs-579721623:/home/project/online-bank/yaml# kubectl get pod
-
-NAME                              READY   STATUS             RESTARTS   AGE
-account-6b844c4f44-gdsvd          1/1     Running            0          76m
-auth-7c55b8b7b9-9r6bb             1/1     Running            0          76m
-efs-provisioner-fbcc88cb8-zrlzx   1/1     Running            0          10m
-gateway-55bd75dfb9-cwlvg          1/1     Running            0          73m
-history-77cc54b895-v5nqm          1/1     Running            0          75m
-mypage-7bc648bd4d-5psgz           1/1     Running            0          73m
-request-5cdc6474bf-p76tr          0/1     ImagePullBackOff   0          25m
-request-646c4cc7c6-xmk59          1/1     Running            0          28m
-siege                             1/1     Running            0          128m
-
-root@labs-579721623:/home/project/online-bank/yaml# kubectl exec -it request-646c4cc7c6-xmk59 -- /bin/bash
-```
-
-### 생성된 Persistence Volume 은 Mount 되지 않은 상태임을 확인한다. 
-
-```
-root@request-646c4cc7c6-xmk59:/# df -h
-Filesystem      Size  Used Avail Use% Mounted on
-overlay          80G  4.2G   76G   6% /
-tmpfs            64M     0   64M   0% /dev
-tmpfs           1.9G     0  1.9G   0% /sys/fs/cgroup
-/dev/nvme0n1p1   80G  4.2G   76G   6% /etc/hosts
-shm              64M     0   64M   0% /dev/shm
-tmpfs           1.9G   12K  1.9G   1% /run/secrets/kubernetes.io/serviceaccount
-tmpfs           1.9G     0  1.9G   0% /proc/acpi
-tmpfs           1.9G     0  1.9G   0% /sys/firmware
-```
-
-### Persistenct Volume 이 Mount 되도록 yaml 설정파일을 변경한다. 
-
-### request-deploy-vol.yaml
-
-```
-    spec:
-      containers:
-        - name: request
-          image: 879772956301.dkr.ecr.ap-northeast-2.amazonaws.com/request
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 8080
-...
-          volumeMounts:
-          - mountPath: "/mnt/aws"
-            name: volume
-...
-      volumes:
-        - name: volume
-          persistentVolumeClaim:
-            claimName: aws-efs
-```
-
-### 변경된 yaml 파일로 서비스 재배포 한다. 
-
-```
-root@labs-579721623:/home/project/online-bank/yaml# kubectl apply -f request-deploy-vol.yaml
-deployment.apps/request created
-```
-
-### Pod 로 접속하여 파일시스템 정보를 확인한다. 
-
-```
-root@request-675f455d5c-t8lzd:/# df -h
-Filesystem      Size  Used Avail Use% Mounted on
-overlay          80G  4.1G   76G   6% /
-tmpfs            64M     0   64M   0% /dev
-tmpfs           1.9G     0  1.9G   0% /sys/fs/cgroup
-/dev/nvme0n1p1   80G  4.1G   76G   6% /mnt/aws
-shm              64M     0   64M   0% /dev/shm
-tmpfs           1.9G   12K  1.9G   1% /run/secrets/kubernetes.io/serviceaccount
-tmpfs           1.9G     0  1.9G   0% /proc/acpi
-tmpfs           1.9G     0  1.9G   0% /sys/firmware
-```
-
-### 생성된 Persistence Volume 이 pod 내 정상 mount 되었음을 확인할 수 있다. 
-*****
 
 ### Liveness Prove
 
