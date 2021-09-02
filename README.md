@@ -863,7 +863,6 @@ root@labs-1621740876:/home/project/draw# kubectl autoscale deployment draw --cpu
 ```
 ![image](https://user-images.githubusercontent.com/87048583/131863699-88214261-0b41-4c38-b315-65300d111824.png)
 ![image](https://user-images.githubusercontent.com/87048583/131863712-b0ea798d-2069-4ab0-b3be-4e4ed5212365.png)
-![image](https://user-images.githubusercontent.com/87048583/131863727-4894363c-4378-479d-83b0-378d977db47a.png)
 
 #### 부하 테스트 진행
 ```
@@ -878,3 +877,44 @@ Terminal 을 추가하여 오토스케일링 현황을 모니터링 한다. ( wa
 ![image](https://user-images.githubusercontent.com/87048583/131864015-cf8d408a-b6e5-4a11-82b7-8487168e16d7.png)
 오토 스케일링이 정상적으로 수행되었음을 확인할 수 있다.
 
+
+### 서킷 브레이킹
+
+1. Spring FeignClient + Hystrix 옵션을 사용하여 구현
+2. 요청-인증시 Request/Response 로 연동하여 구현이 되어있으며 요청이 과도할 경우 CB를 통하여 장애격리
+3. Hystrix 를 설정: 요청처리 쓰레드에서 처리시간이 610 밀리가 넘어서기 시작하여 어느정도 유지되면
+  CB 회로가 닫히도록 (요청을 빠르게 실패처리, 차단) 설정
+
+application.yml
+```
+feign:
+  hystrix:
+    enabled: true
+
+hystrix:
+  command:
+    default:
+      execution.isolation.thread.timeoutInMilliseconds: 610
+ ```     
+4. 인증 서비스의 임의 부하 처리
+Auth.java (Entity)
+```java
+    @PrePersist
+    public void onPrePersist(){  
+
+        ...
+        
+        try {
+	    // 인증 데이터 저장 전 처리 시간을 400ms ~ 620ms 강제 지연
+            Thread.currentThread().sleep((long) (400 + Math.random() * 220));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+```
+5. 부하테스터 seige 툴을 통한 서킷 브레이커 동작 확인
+```
+root@siege:/# siege -v -c100 -t90S -r10 --content-type "application/json" 'http://request:8080/requests POST {"accountNo":"1111","requestId":"01","requestName":"Deposit","amountOfMoney":10000,"userId":"1@sk.com","userName":"sam","userPassword":"1234"}' ( 동시사용자 100명, 90초간 진행 )
+```
+
+운영시스템은 죽지 않고 지속적으로 CB 에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 자원을 보호하고 있음을 보여줌. 동적 Scale out (replica의 자동적 추가,HPA) 을 통하여 시스템을 확장 해주는 후속처리가 필요.
