@@ -914,7 +914,7 @@ Auth.java (Entity)
 ```
 5. 부하테스터 seige 툴을 통한 서킷 브레이커 동작 확인
 ```
-root@siege:/#  siege -v -c100 -t90S -r10 --content-type "application/json" 'http://order:8080/orders POST {"itemNo":"1131","price":"100000","size":"275 ","userId":"dj14","userPassword":"1234"}' ( 동시사용자 100명, 90초간 진행 )
+root@siege:/#  siege -v -c100 -t90S -r10 --content-type "application/json" 'http://order:8080/orders POST {"itemNo":"1131","price":"100000","size":"275 ","userId":"dj@sk.com","userPassword":"1234"}'' ( 동시사용자 100명, 90초간 진행 )
 ```
 ![image](https://user-images.githubusercontent.com/87048583/131873758-e037c6a9-9573-49c8-8395-e7958e2d7795.png)
 
