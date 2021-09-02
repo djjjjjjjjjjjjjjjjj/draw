@@ -847,8 +847,85 @@ root@labs-1621740876:/home/project/draw# kubectl exec -it draw-648bcdbd5d-q6ckw 
 ```
 ![image](https://user-images.githubusercontent.com/87048583/131855639-66f67be2-cad1-4cb7-a9ff-e386610d4751.png)
 
-
 ### 생성된 Persistence Volume 이 pod 내 정상 mount 되었음을 확인할 수 있다. 
+
+
+### 오토스케일 아웃
+
+앞서 CB 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에
+이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다.
+
+결제서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다.
+
+설정은 CPU 사용량이 50프로를 넘어서면 replica 를 10개까지 늘려준다
+```
+root@labs-579721623:/home/project/draw/Authentication# kubectl autoscale deployment request --cpu-percent=50 --min=1 --max=10
+horizontalpodautoscaler.autoscaling/request autoscaled
+```
+부하 테스트 진행
+root@siege:/# siege -v -c100 -t90S -r10 --content-type "application/json" 'http://request:8080/draws POST 
+{"itemNo":"1111","price":"100000","drawDate":"2021-08-28","size":"275","drawId":"001","drawName":"NIKE jordan 1". "userId":"dj14"}' ( 동시사용자 100명, 90초간 진행 )
+
+HTTP/1.1 201     1.63 secs:     370 bytes ==> POST http://request:8080/draws
+HTTP/1.1 201     0.98 secs:     370 bytes ==> POST http://request:8080/draws
+HTTP/1.1 201     0.80 secs:     370 bytes ==> POST http://request:8080/draws
+HTTP/1.1 201     0.09 secs:     370 bytes ==> POST http://request:8080/draws
+HTTP/1.1 201     0.90 secs:     370 bytes ==> POST http://request:8080/draws
+HTTP/1.1 201     0.89 secs:     370 bytes ==> POST http://request:8080/draws
+HTTP/1.1 201     0.18 secs:     370 bytes ==> POST http://request:8080/draws
+HTTP/1.1 201     0.19 secs:     370 bytes ==> POST http://request:8080/draws
+HTTP/1.1 201     1.71 secs:     370 bytes ==> POST http://request:8080/draws
+HTTP/1.1 201     0.10 secs:     370 bytes ==> POST http://request:8080/draws
+HTTP/1.1 201     0.80 secs:     370 bytes ==> POST http://request:8080/draws
+HTTP/1.1 201     0.81 secs:     370 bytes ==> POST http://request:8080/draws
+HTTP/1.1 201     0.82 secs:     370 bytes ==> POST http://request:8080/draws
+
+Lifting the server siege...
+Transactions:                   8988 hits
+Availability:                 100.00 %
+Elapsed time:                  89.51 secs
+Data transferred:               3.17 MB
+Response time:                  0.99 secs
+Transaction rate:             100.41 trans/sec
+Throughput:                     0.04 MB/sec
+Concurrency:                   99.42
+Successful transactions:        8989
+Failed transactions:               0
+Longest transaction:            8.59
+Shortest transaction:           0.01
+
+Terminal 을 추가하여 오토스케일링 현황을 모니터링 한다. ( watch kubectl get pod )
+부하 테스트 진행전
+
+Every 2.0s: kubectl get pod       labs-579721623: Thu Aug 19 08:44:47 2021
+
+NAME                              READY   STATUS    RESTARTS   AGE
+account-6b844c4f44-gdsvd          1/1     Running   0          145m
+auth-7c55b8b7b9-9r6bb             1/1     Running   0          145m
+efs-provisioner-fbcc88cb8-zrlzx   1/1     Running   0          79m
+gateway-55bd75dfb9-cwlvg          1/1     Running   0          142m
+history-77cc54b895-v5nqm          1/1     Running   0          144m
+mypage-7bc648bd4d-5psgz           1/1     Running   0          143m
+request-675f455d5c-7txbc          1/1     Running   0          28m
+부하 테스트 진행 후
+Every 2.0s: kubectl get pod       labs-579721623: Thu Aug 19 08:46:34 2021
+
+NAME                              READY   STATUS    RESTARTS   AGE
+account-6b844c4f44-gdsvd          1/1     Running   0          147m
+auth-7c55b8b7b9-9r6bb             1/1     Running   0          147m
+efs-provisioner-fbcc88cb8-zrlzx   1/1     Running   0          81m
+gateway-55bd75dfb9-cwlvg          1/1     Running   0          144m
+history-77cc54b895-v5nqm          1/1     Running   0          146m
+mypage-7bc648bd4d-5psgz           1/1     Running   0          144m
+request-675f455d5c-256tz          0/1     Running   0          31s
+request-675f455d5c-6s2nz          0/1     Running   0          46s
+request-675f455d5c-7txbc          1/1     Running   0          30m
+request-675f455d5c-bz4nq          0/1     Running   0          46s
+request-675f455d5c-mdbbl          0/1     Running   0          46s
+siege                             1/1     Running   0          3h19m
+
+부하테스트 결과 Availability 는 100% 를 보이며 성공하였고, 늘어난 pod 개수를 통하여
+오토 스케일링이 정상적으로 수행되었음을 확인할 수 있다.
 
 
 
@@ -980,186 +1057,6 @@ Shortest transaction:           0.01
 동적 Scale out (replica의 자동적 추가,HPA) 을 통하여 시스템을 확장 해주는 후속처리가 필요.
 
 
-### 오토스케일 아웃
-앞서 CB 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에
-이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다.
-
-결제서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다.
-
-설정은 CPU 사용량이 50프로를 넘어서면 replica 를 10개까지 늘려준다
-```
-root@labs-579721623:/home/project/draw/Authentication# kubectl autoscale deployment request --cpu-percent=50 --min=1 --max=10
-horizontalpodautoscaler.autoscaling/request autoscaled
-```
-부하 테스트 진행
-root@siege:/# siege -v -c100 -t90S -r10 --content-type "application/json" 'http://request:8080/draws POST 
-{"itemNo":"1111","price":"100000","drawDate":"2021-08-28","size":"275","drawId":"001","drawName":"NIKE jordan 1". "userId":"dj14"}' ( 동시사용자 100명, 90초간 진행 )
-
-HTTP/1.1 201     1.63 secs:     370 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.98 secs:     370 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.80 secs:     370 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.09 secs:     370 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.90 secs:     370 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.89 secs:     370 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.18 secs:     370 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.19 secs:     370 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     1.71 secs:     370 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.10 secs:     370 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.80 secs:     370 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.81 secs:     370 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.82 secs:     370 bytes ==> POST http://request:8080/draws
-
-Lifting the server siege...
-Transactions:                   8988 hits
-Availability:                 100.00 %
-Elapsed time:                  89.51 secs
-Data transferred:               3.17 MB
-Response time:                  0.99 secs
-Transaction rate:             100.41 trans/sec
-Throughput:                     0.04 MB/sec
-Concurrency:                   99.42
-Successful transactions:        8989
-Failed transactions:               0
-Longest transaction:            8.59
-Shortest transaction:           0.01
-
-Terminal 을 추가하여 오토스케일링 현황을 모니터링 한다. ( watch kubectl get pod )
-부하 테스트 진행전
-
-Every 2.0s: kubectl get pod       labs-579721623: Thu Aug 19 08:44:47 2021
-
-NAME                              READY   STATUS    RESTARTS   AGE
-account-6b844c4f44-gdsvd          1/1     Running   0          145m
-auth-7c55b8b7b9-9r6bb             1/1     Running   0          145m
-efs-provisioner-fbcc88cb8-zrlzx   1/1     Running   0          79m
-gateway-55bd75dfb9-cwlvg          1/1     Running   0          142m
-history-77cc54b895-v5nqm          1/1     Running   0          144m
-mypage-7bc648bd4d-5psgz           1/1     Running   0          143m
-request-675f455d5c-7txbc          1/1     Running   0          28m
-부하 테스트 진행 후
-Every 2.0s: kubectl get pod       labs-579721623: Thu Aug 19 08:46:34 2021
-
-NAME                              READY   STATUS    RESTARTS   AGE
-account-6b844c4f44-gdsvd          1/1     Running   0          147m
-auth-7c55b8b7b9-9r6bb             1/1     Running   0          147m
-efs-provisioner-fbcc88cb8-zrlzx   1/1     Running   0          81m
-gateway-55bd75dfb9-cwlvg          1/1     Running   0          144m
-history-77cc54b895-v5nqm          1/1     Running   0          146m
-mypage-7bc648bd4d-5psgz           1/1     Running   0          144m
-request-675f455d5c-256tz          0/1     Running   0          31s
-request-675f455d5c-6s2nz          0/1     Running   0          46s
-request-675f455d5c-7txbc          1/1     Running   0          30m
-request-675f455d5c-bz4nq          0/1     Running   0          46s
-request-675f455d5c-mdbbl          0/1     Running   0          46s
-siege                             1/1     Running   0          3h19m
-
-부하테스트 결과 Availability 는 100% 를 보이며 성공하였고, 늘어난 pod 개수를 통하여
-오토 스케일링이 정상적으로 수행되었음을 확인할 수 있다.
-
-무정지 재배포 여부를 확인을 위해서 Autoscaler 와 CB 설정을 제거한다.
-```
-root@siege:/# siege -v -c100 -t90S -r10 --content-type "application/json" 'http://request:8080/draws POST 
-{"itemNo":"1111","price":"100000","drawDate":"2021-08-28","size":"275","drawId":"001","drawName":"NIKE jordan 1". "userId":"dj14"}' ( 동시사용자 100명, 90초간 진행 )
-```
-
-부하테스트중 추가 생성한 Terminal 에서 readiness 설정되지 않은 버젼으로 재배포 한다.
-root@labs-579721623:/home/project/online-bank/yaml# kubectl apply -f request-redeploy.yaml
-deployment.apps/request configured
-service/request configured
-
-[error] socket: unable to connect sock.c:249: Connection refused
-[error] socket: unable to connect sock.c:249: Connection refused
-[error] socket: unable to connect sock.c:249: Connection refused
-[error] socket: unable to connect sock.c:249: Connection refused
-[error] socket: unable to connect sock.c:249: Connection refused
-[error] socket: unable to connect sock.c:249: Connection refused
-[error] socket: unable to connect sock.c:249: Connection refused
-[error] socket: unable to connect sock.c:249: Connection refused
-HTTP/1.1 201     0.83 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.86 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.84 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     1.50 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.94 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.91 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.94 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     1.64 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.81 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     1.43 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.88 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.93 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     1.40 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.89 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     1.42 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.94 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.85 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.85 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.90 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.93 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.80 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.92 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.94 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.94 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.97 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.97 secs:     370 bytes ==> POST http://request:8080/requests
-HTTP/1.1 201     0.91 secs:     370 bytes ==> POST http://request:8080/requests
-siege aborted due to excessive socket failure; you
-can change the failure threshold in $HOME/.siegerc
-
-Transactions:                   1154 hits
-Availability:                  51.38 %
-Elapsed time:                  12.57 secs
-Data transferred:               0.41 MB
-Response time:                  1.06 secs
-Transaction rate:              91.81 trans/sec
-Throughput:                     0.03 MB/sec
-Concurrency:                   97.58
-Successful transactions:        1154
-Failed transactions:            1092
-Longest transaction:            4.69
-Shortest transaction:           0.02
-부하테스트중 새로 배포된 서비스를 READY 상태로 인지하여 서비스 중단됨을 확인함.
-부하테스트 진행
-root@siege:/# siege -v -c100 -t30S -r10 --content-type "application/json" 'http://request:8080/requests POST {"accountNo":"1111","requestId":"01","requestName":"Deposit","amountOfMoney":10000,"userId":"1@sk.com","userName":"sam","userPassword":"1234"}' ( 동시사용자 100명, 90초간 진행 )
-
-부하테스트중 추가 생성한 Terminal 에서 readiness 설정 되어있는 버젼으로 재배포 한다.
-
-```
-root@labs-579721623:/home/project/online-bank/yaml# kubectl apply -f request-deploy.yaml
-deployment.apps/request configured
-service/request unchanged
-```
-
-HTTP/1.1 201     0.37 secs:     372 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.56 secs:     372 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.38 secs:     372 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.38 secs:     372 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.36 secs:     372 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.35 secs:     372 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.36 secs:     372 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.34 secs:     372 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.36 secs:     372 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.37 secs:     372 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.35 secs:     372 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.05 secs:     372 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.33 secs:     372 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.05 secs:     372 bytes ==> POST http://request:8080/draws
-HTTP/1.1 201     0.08 secs:     372 bytes ==> POST http://request:8080/draws
-
-Lifting the server siege...
-Transactions:                  24451 hits
-Availability:                 100.00 %
-Elapsed time:                  89.32 secs
-Data transferred:               8.65 MB
-Response time:                  0.36 secs
-Transaction rate:             273.75 trans/sec
-Throughput:                     0.10 MB/sec
-Concurrency:                   99.31
-Successful transactions:       24451
-Failed transactions:               0
-Longest transaction:            2.72
-Shortest transaction:           0.00
-배포중 Availability 100%를 보이며 무정지 재배포가 정상적으로 성공하였다.
- 
 
 ### Liveness Prove
 
