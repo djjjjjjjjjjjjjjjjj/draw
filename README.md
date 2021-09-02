@@ -750,7 +750,6 @@ root@siege:/# http order:8080/orders itemNo="1114" price="10000" size=275 userId
 
 ## Zero-downtime deploy (Readiness Probe) 무정지 재배포
 
-무정지 재배포 여부를 확인을 위해서 Autoscaler 와 CB 설정을 제거한다.
 ```
 root@siege:/#  siege -v -c100 -t90S -r10 --content-type "application/json" 'http://order:8080/orders POST {"itemNo":"1131","price":"100000","size":"275 ",userId":"dj14","userPassword":"1234"}'
 ( 동시사용자 100명, 90초간 진행 )
@@ -762,6 +761,9 @@ root@siege:/#  siege -v -c100 -t90S -r10 --content-type "application/json" 'http
 root@labs-1621740876:/home/project/draw# kubectl apply -f order-redeploy.yaml
 ```
 ![image](https://user-images.githubusercontent.com/87048583/131841542-c7e86352-e6ae-487a-9caf-12501cf2aa3d.png)
+
+
+
 
 
 ##  서킷 브레이킹 
