@@ -1,0 +1,15 @@
+draw\external\Auth.class
+draw\PolicyHandler.class
+draw\OrderController.class
+draw\OrderRepository.class
+draw\AbstractEvent.class
+draw\config\kafka\KafkaProcessor.class
+draw\AuthCertified.class
+draw\external\AuthServiceFallback.class
+draw\OrderRequested.class
+draw\external\AuthService.class
+draw\AuthCancelled.class
+draw\OrderCanceled.class
+draw\AbstractEvent$1.class
+draw\Order.class
+draw\OrderApplication.class
