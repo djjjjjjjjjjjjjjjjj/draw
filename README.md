@@ -692,8 +692,8 @@ public class PolicyHandler{
 
 # 운영
 
-## Gateway
-### Gateway 기능이 정상적으로 수행되는지 확인하기 위하여 Gateway를 통하여 요청서비스를 호출한다
+### Gateway
+#### Gateway 기능이 정상적으로 수행되는지 확인하기 위하여 Gateway를 통하여 요청서비스를 호출한다
 ```
 root@siege:/# http gateway:8080/draws itemNo="1111" price="100000" drawDate="2021-08-28" size=275 drawId="01" drawName="NIKE jordan 1" userId="dj14"
 ```
@@ -712,7 +712,7 @@ Gateway 테스트시 존재하지 않는 응모요청코드에  시도하였으�
 
 ### 동기식 호출 (운영)
 
-### 동기식 호출인 관계로 인증시스템 장애시 서비스를 처리할 수 없다. 
+#### 동기식 호출인 관계로 인증시스템 장애시 서비스를 처리할 수 없다. 
 
 1) 인증 서비스 임시로 삭제한다. 
 
@@ -746,9 +746,9 @@ root@siege:/# http order:8080/orders itemNo="1114" price="10000" size=275 userId
 
 ![image](https://user-images.githubusercontent.com/87048583/131814095-e07e916f-fd20-4072-aa29-f58c68a5ed22.png)
 
-### 테스트를 통하여 인증 서비스가 기동되지 않은 상태에서는 업무 요청이 실패함을 확인 할 수 있음.
+#### 테스트를 통하여 인증 서비스가 기동되지 않은 상태에서는 업무 요청이 실패함을 확인 할 수 있음.
 
-## Zero-downtime deploy (Readiness Probe) 무정지 재배포
+### Zero-downtime deploy (Readiness Probe) 무정지 재배포
 
 ```
 root@siege:/#  siege -v -c100 -t90S -r10 --content-type "application/json" 'http://order:8080/orders POST {"itemNo":"1131","price":"100000","size":"275 ",userId":"dj14","userPassword":"1234"}'
@@ -779,14 +779,14 @@ root@labs-1621740876:/home/project/draw# kubectl apply -f order-deploy.yaml
 
 ### Persistence Volume
 
-### Persistence Volume 을 생성한다. 
+#### Persistence Volume 을 생성한다. 
 
 ```
 root@labs-1621740876:/home/project/draw# kubectl get pv
 ```
 ![image](https://user-images.githubusercontent.com/87048583/131848914-50db3379-645c-4468-a005-83b724edb68c.png)
 
-### Persistence Volume Claim 을 생성한다. 
+#### Persistence Volume Claim 을 생성한다. 
 
 ```
 root@labs-1621740876:/home/project/draw# kubectl get pvc
@@ -794,7 +794,7 @@ root@labs-1621740876:/home/project/draw# kubectl get pvc
 ![image](https://user-images.githubusercontent.com/87048583/131849001-5df0d23b-08e7-4858-a1e7-064b36a548df.png)
 
 
-### Pod 로 접속하여 파일시스템 정보를 확인한다. 
+#### Pod 로 접속하여 파일시스템 정보를 확인한다. 
 
 ```
 root@labs-1621740876:/home/project/draw# kubectl get pod
@@ -807,12 +807,12 @@ root@labs-1621740876:/home/project/draw# kubectl exec -it draw-7f76f46697-xwz64 
 ```
 ![image](https://user-images.githubusercontent.com/87048583/131852005-4df6f1bc-9a07-43ae-a3a0-d4a4d8a2dd1a.png)
 
-### 생성된 Persistence Volume 은 Mount 되지 않은 상태임을 확인한다. 
+#### 생성된 Persistence Volume 은 Mount 되지 않은 상태임을 확인한다. 
 
 
-### Persistenct Volume 이 Mount 되도록 yaml 설정파일을 변경한다. 
+#### Persistenct Volume 이 Mount 되도록 yaml 설정파일을 변경한다. 
 
-### draw-deploy-vol.yaml
+#### draw-deploy-vol.yaml
 
 ```
     spec:
@@ -833,21 +833,21 @@ root@labs-1621740876:/home/project/draw# kubectl exec -it draw-7f76f46697-xwz64 
             claimName: aws-efs
 ```
 
-### 변경된 yaml 파일로 서비스 재배포 한다. 
+#### 변경된 yaml 파일로 서비스 재배포 한다. 
 
 ```
 root@labs-1621740876:/home/project/draw# kubectl apply -f  draw-deploy-vol.yaml
 ```
 ![image](https://user-images.githubusercontent.com/87048583/131855394-c14d701d-55fd-417d-8c35-1493b04aeb26.png)
 
-### Pod 로 접속하여 파일시스템 정보를 확인한다. 
+#### Pod 로 접속하여 파일시스템 정보를 확인한다. 
 
 ```
 root@labs-1621740876:/home/project/draw# kubectl exec -it draw-648bcdbd5d-q6ckw -- /bin/sh
 ```
 ![image](https://user-images.githubusercontent.com/87048583/131855639-66f67be2-cad1-4cb7-a9ff-e386610d4751.png)
 
-# 생성된 Persistence Volume 이 pod 내 정상 mount 되었음을 확인할 수 있다. 
+#### 생성된 Persistence Volume 이 pod 내 정상 mount 되었음을 확인할 수 있다. 
 
 
 ### 오토스케일 아웃
