@@ -782,67 +782,43 @@ root@labs-1621740876:/home/project/draw# kubectl apply -f order-deploy.yaml
 ### Persistence Volume 을 생성한다. 
 
 ```
-root@labs-579721623:/home/project/online-bank/yaml# kubectl get pv
-
-NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                      STORAGECLASS   REASON   AGE
-pvc-60c0deaa-241e-443d-a770-2c4890b0d9db   1Gi        RWO            Delete           Bound    kafka/datadir-my-kafka-2   gp2                     174m
-pvc-ce2fe4aa-be29-4c82-8637-7d247b243456   1Gi        RWO            Delete           Bound    kafka/datadir-my-kafka-1   gp2                     175m
-pvc-f0331c5b-0127-475f-93db-58999bb38980   1Gi        RWO            Delete           Bound    kafka/datadir-my-kafka-0   gp2                     177m
-task-pv-volume                             100Mi      RWO            Retain           Bound    labs-579721623/aws-efs     aws-efs                 4m4s
+root@labs-1621740876:/home/project/draw# kubectl get pv
 ```
+![image](https://user-images.githubusercontent.com/87048583/131848914-50db3379-645c-4468-a005-83b724edb68c.png)
 
 ### Persistence Volume Claim 을 생성한다. 
 
 ```
-root@labs-579721623:/home/project/online-bank/yaml# kubectl get pvc
-
-NAME      STATUS   VOLUME           CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-aws-efs   Bound    task-pv-volume   100Mi      RWO            aws-efs        101s
+root@labs-1621740876:/home/project/draw# kubectl get pvc
 ```
+![image](https://user-images.githubusercontent.com/87048583/131849001-5df0d23b-08e7-4858-a1e7-064b36a548df.png)
+
 
 ### Pod 로 접속하여 파일시스템 정보를 확인한다. 
 
 ```
-root@labs-579721623:/home/project/online-bank/yaml# kubectl get pod
-
-NAME                              READY   STATUS             RESTARTS   AGE
-account-6b844c4f44-gdsvd          1/1     Running            0          76m
-auth-7c55b8b7b9-9r6bb             1/1     Running            0          76m
-efs-provisioner-fbcc88cb8-zrlzx   1/1     Running            0          10m
-gateway-55bd75dfb9-cwlvg          1/1     Running            0          73m
-history-77cc54b895-v5nqm          1/1     Running            0          75m
-mypage-7bc648bd4d-5psgz           1/1     Running            0          73m
-request-5cdc6474bf-p76tr          0/1     ImagePullBackOff   0          25m
-request-646c4cc7c6-xmk59          1/1     Running            0          28m
-siege                             1/1     Running            0          128m
-
-root@labs-579721623:/home/project/online-bank/yaml# kubectl exec -it request-646c4cc7c6-xmk59 -- /bin/bash
+root@labs-1621740876:/home/project/draw# kubectl get pod
 ```
+![image](https://user-images.githubusercontent.com/87048583/131851919-7995a30f-97aa-47f7-acc2-4e1fc9d1bc31.png)
+
+
+```
+root@labs-1621740876:/home/project/draw# kubectl exec -it draw-7f76f46697-xwz64 -- /bin/sh
+```
+![image](https://user-images.githubusercontent.com/87048583/131852005-4df6f1bc-9a07-43ae-a3a0-d4a4d8a2dd1a.png)
 
 ### 생성된 Persistence Volume 은 Mount 되지 않은 상태임을 확인한다. 
 
-```
-root@request-646c4cc7c6-xmk59:/# df -h
-Filesystem      Size  Used Avail Use% Mounted on
-overlay          80G  4.2G   76G   6% /
-tmpfs            64M     0   64M   0% /dev
-tmpfs           1.9G     0  1.9G   0% /sys/fs/cgroup
-/dev/nvme0n1p1   80G  4.2G   76G   6% /etc/hosts
-shm              64M     0   64M   0% /dev/shm
-tmpfs           1.9G   12K  1.9G   1% /run/secrets/kubernetes.io/serviceaccount
-tmpfs           1.9G     0  1.9G   0% /proc/acpi
-tmpfs           1.9G     0  1.9G   0% /sys/firmware
-```
 
 ### Persistenct Volume 이 Mount 되도록 yaml 설정파일을 변경한다. 
 
-### request-deploy-vol.yaml
+### draw-deploy-vol.yaml
 
 ```
     spec:
       containers:
-        - name: request
-          image: 879772956301.dkr.ecr.ap-northeast-2.amazonaws.com/request
+        - name: draw
+          image: 052937454741.dkr.ecr.ap-southeast-2.amazonaws.com/draw
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -860,24 +836,17 @@ tmpfs           1.9G     0  1.9G   0% /sys/firmware
 ### 변경된 yaml 파일로 서비스 재배포 한다. 
 
 ```
-root@labs-579721623:/home/project/online-bank/yaml# kubectl apply -f request-deploy-vol.yaml
-deployment.apps/request created
+root@labs-1621740876:/home/project/draw# kubectl apply -f  draw-deploy-vol.yaml
 ```
+![image](https://user-images.githubusercontent.com/87048583/131855394-c14d701d-55fd-417d-8c35-1493b04aeb26.png)
 
 ### Pod 로 접속하여 파일시스템 정보를 확인한다. 
 
 ```
-root@request-675f455d5c-t8lzd:/# df -h
-Filesystem      Size  Used Avail Use% Mounted on
-overlay          80G  4.1G   76G   6% /
-tmpfs            64M     0   64M   0% /dev
-tmpfs           1.9G     0  1.9G   0% /sys/fs/cgroup
-/dev/nvme0n1p1   80G  4.1G   76G   6% /mnt/aws
-shm              64M     0   64M   0% /dev/shm
-tmpfs           1.9G   12K  1.9G   1% /run/secrets/kubernetes.io/serviceaccount
-tmpfs           1.9G     0  1.9G   0% /proc/acpi
-tmpfs           1.9G     0  1.9G   0% /sys/firmware
+root@labs-1621740876:/home/project/draw# kubectl exec -it draw-648bcdbd5d-q6ckw -- /bin/sh
 ```
+![image](https://user-images.githubusercontent.com/87048583/131855639-66f67be2-cad1-4cb7-a9ff-e386610d4751.png)
+
 
 ### 생성된 Persistence Volume 이 pod 내 정상 mount 되었음을 확인할 수 있다. 
 
