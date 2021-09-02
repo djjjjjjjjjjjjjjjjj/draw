@@ -751,7 +751,7 @@ root@siege:/# http order:8080/orders itemNo="1114" price="10000" size=275 userId
 ### Zero-downtime deploy (Readiness Probe) 무정지 재배포
 
 ```
-root@siege:/#  siege -v -c100 -t90S -r10 --content-type "application/json" 'http://order:8080/orders POST {"itemNo":"1131","price":"100000","size":"275 ",userId":"dj14","userPassword":"1234"}'
+root@siege:/#  siege -v -c100 -t90S -r10 --content-type "application/json" 'http://order:8080/orders POST {"itemNo":"1131","price":"100000","size":"275 ","userId":"dj14","userPassword":"1234"}'
 ( 동시사용자 100명, 90초간 진행 )
 ```
 ![image](https://user-images.githubusercontent.com/87048583/131841608-2ab940c9-1cc6-4b9e-ac93-f72d6746cd93.png)
@@ -914,7 +914,8 @@ Auth.java (Entity)
 ```
 5. 부하테스터 seige 툴을 통한 서킷 브레이커 동작 확인
 ```
-root@siege:/# siege -v -c100 -t90S -r10 --content-type "application/json" 'http://request:8080/requests POST {"accountNo":"1111","requestId":"01","requestName":"Deposit","amountOfMoney":10000,"userId":"1@sk.com","userName":"sam","userPassword":"1234"}' ( 동시사용자 100명, 90초간 진행 )
+root@siege:/#  siege -v -c100 -t90S -r10 --content-type "application/json" 'http://order:8080/orders POST {"itemNo":"1131","price":"100000","size":"275 ","userId":"dj14","userPassword":"1234"}' ( 동시사용자 100명, 90초간 진행 )
 ```
+![image](https://user-images.githubusercontent.com/87048583/131873758-e037c6a9-9573-49c8-8395-e7958e2d7795.png)
 
 운영시스템은 죽지 않고 지속적으로 CB 에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 자원을 보호하고 있음을 보여줌. 동적 Scale out (replica의 자동적 추가,HPA) 을 통하여 시스템을 확장 해주는 후속처리가 필요.
