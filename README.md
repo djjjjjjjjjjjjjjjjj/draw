@@ -951,16 +951,27 @@ spec:
       initialDelaySeconds: 5
       periodSeconds: 5
 ```
+
 모든 서비스 delete
+
 ![image](https://user-images.githubusercontent.com/87048583/131937128-ca919b44-beb2-4c88-95a3-af917509e547.png)
+
 exec-liveness.yaml 적용
+
 ![image](https://user-images.githubusercontent.com/87048583/131937213-e8b2772b-3c57-4352-b479-d4864f783edb.png)
+
 pod 상태 확인 
+
 컨테이너가 Running 상태로 보이나, Liveness Probe 실패로 재시작
+
 ![image](https://user-images.githubusercontent.com/87048583/131937281-e600be0e-a8c5-4270-ab23-a0e37df21ab4.png)
+
 kubectl describe로 실패 메시지 확인
+
 ![image](https://user-images.githubusercontent.com/87048583/131937348-484690b7-9c7f-4d33-bd06-32a624f8da0a.png)
 ![image](https://user-images.githubusercontent.com/87048583/131937381-f202ac02-1728-4132-80f4-f4991a69745a.png)
+
 재시작됨 확인
+
 ![image](https://user-images.githubusercontent.com/87048583/131937422-dc493e17-155e-416a-9e34-42e60dd6fafd.png)
 
