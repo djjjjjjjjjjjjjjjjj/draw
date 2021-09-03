@@ -922,3 +922,45 @@ root@siege:/#  siege -v -c100 -t90S -r10 --content-type "application/json" 'http
 
 
 운영시스템은 죽지 않고 지속적으로 CB 에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 자원을 보호하고 있음을 보여줌. 동적 Scale out (replica의 자동적 추가,HPA) 을 통하여 시스템을 확장 해주는 후속처리가 필요.
+
+### Liveness Prove
+ Liveness Command probe
+/tmp/healthy 파일이 존재하는지 확인
+
+exec-liveness.yaml
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    test: liveness
+  name: liveness-exec
+spec:
+  containers:
+  - name: liveness
+    image: k8s.gcr.io/busybox
+    args:
+    - /bin/sh
+    - -c
+    - touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600
+    livenessProbe:
+      exec:
+        command:
+        - cat
+        - /tmp/healthy
+      initialDelaySeconds: 5
+      periodSeconds: 5
+```
+모든 서비스 delete
+![image](https://user-images.githubusercontent.com/87048583/131937128-ca919b44-beb2-4c88-95a3-af917509e547.png)
+exec-liveness.yaml 적용
+![image](https://user-images.githubusercontent.com/87048583/131937213-e8b2772b-3c57-4352-b479-d4864f783edb.png)
+pod 상태 확인 
+컨테이너가 Running 상태로 보이나, Liveness Probe 실패로 재시작
+![image](https://user-images.githubusercontent.com/87048583/131937281-e600be0e-a8c5-4270-ab23-a0e37df21ab4.png)
+kubectl describe로 실패 메시지 확인
+![image](https://user-images.githubusercontent.com/87048583/131937348-484690b7-9c7f-4d33-bd06-32a624f8da0a.png)
+![image](https://user-images.githubusercontent.com/87048583/131937381-f202ac02-1728-4132-80f4-f4991a69745a.png)
+재시작됨 확인
+![image](https://user-images.githubusercontent.com/87048583/131937422-dc493e17-155e-416a-9e34-42e60dd6fafd.png)
+
