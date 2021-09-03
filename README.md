@@ -424,6 +424,8 @@ pom.xml
           <artifactId>mariadb-java-client</artifactId>
       </dependency>
 ```
+![image](https://user-images.githubusercontent.com/87048583/131952210-e9c2c390-3de3-4ebd-937f-55afde837415.png)
+
 
 application.yml
 ```
@@ -433,6 +435,9 @@ datasource:
     username: root
     password: 1234
 ```
+
+![image](https://user-images.githubusercontent.com/87048583/131952185-a51c2614-9ba5-457a-b71d-5fb14a8e5590.png)
+
 
 ## 동기식 호출 구현
 분석단계에서의 조건 중 하나로 주문(order)->인증(auth) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로
